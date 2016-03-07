@@ -34,7 +34,7 @@ std::string to_string(std::vector<Nucleotide> const & seq){
 }
 
 /// Simple constructor, looks up and stores sequence and metadata.
-Footprint::Footprint(Chromosome const & chr,size_t begin,size_t end):
+FullFootprint::FullFootprint(Chromosome const & chr,size_t begin,size_t end):
     chrN(chr.name),
     seq(chr.seq.begin()+begin,chr.seq.begin()+end),
     loc(begin,end)
@@ -43,7 +43,7 @@ Footprint::Footprint(Chromosome const & chr,size_t begin,size_t end):
 /// Pretty-printing string cast.
 
 /// \return A single-line pretty-printing representation. 
-Footprint::operator std::string () const {
+FullFootprint::operator std::string () const {
     return this->chrN + " " +                                     //chrN
         std::string(this->seq.begin(),this->seq.end()) +          //seq
         " (" + this->loc.first << ", " + this->loc.second + ")";  //loc
@@ -112,14 +112,6 @@ std::vector<std::string> split(std::string const & s,char delim){
     return ret;
 }
 
-//TODO: Continue refactoring here, adding doxygen comments to refactored code.
-//TODO: refactor to create a collection of BlindFootprint per chromosome.
-Footprint parsefootprint(Chromosome const & chr,std::string const & entry){
-    auto splitent = split(entry,'\t');
-    assert(chr.name==splitent[0]);
-    return Footprint(chr,stoull(splitent[1]),stoull(splitent[2]));
-}
-
 // Appends a new item if unequal to last element
 
 // \arg &coll A collection storing elements of template type T
@@ -133,8 +125,20 @@ V & pushifnew(V & coll, T && el){
     return coll;
 }
 
+// Start of new code
 
-std::vector<Footprint> read_footprints(std::string const fpfilename){
+
+
+// End of new code
+
+//TODO: refactor to create a collection of BlindFootprint per chromosome.
+FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry){
+    auto splitent = split(entry,'\t');
+    assert(chr.name==splitent[0]);
+    return FullFootprint(chr,stoull(splitent[1]),stoull(splitent[2]));
+}
+
+std::vector<FullFootprint> read_footprints(std::string const fpfilename){
     std::vector<std::string> fpfile(readlines(fpfilename)); 
     /*std::sort(
             fpfile.begin(),
@@ -155,12 +159,12 @@ std::vector<Footprint> read_footprints(std::string const fpfilename){
             chrlist.begin(),
             [](string const&s) {return split(s,'\t')[0];}
             );*/
-    std::vector<Footprint> footprints;
+    std::vector<FullFootprint> footprints;
     for(auto chrN : chrlist){
         std::cout << "Reading " << chrN << std::endl;
         Chromosome chr = readfa(chrN);
         std::cout << "Read " << chrN << std::endl;
-        std::vector<Footprint> listcomp;//start Julia list comp...
+        std::vector<FullFootprint> listcomp;//start Julia list comp...
         for(auto s : fpfile) 
             if(split(s,'\t')[0] == chrN)
                 listcomp.push_back(parsefootprint(chr,s));

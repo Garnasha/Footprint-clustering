@@ -1,0 +1,22 @@
+Maak een SubSeqCluster.
+-Schrijf de hash-functie op k-nucleotiden.
+-Schrijf een identiteit voor k-nucleotiden. (operator== ?)
+-Zorg dat reverse complement herkend wordt als zodanig.
+-Implementeer lexicografische ordening op k-nucleotiden.
+-Schrijf een afstandsfunctie. Manhattan om te beginnen, 
+	verfijn naar mutatiekans.
+
+Maak een graaf-datastructuur uit een hashset of hashmap.
+-Zorg dat hierin buren makkelijk te vinden zijn.
+--Idee: indirectie op enig niveau. SubSeqCluster zelf?
+---Hier is een union van een Value* en een ConstructorFood* handig.
+--Verder: misschien alle buren binnen een bepaalde straal
+	opslaan?
+-Implementeer minimal spanning tree.
+-Implementeer splitsing van de resulterende MST
+--Naief, of
+--Met peak-to-peak.
+
+Overig
+-Maak een filter die alleen SubSequences van een bepaalde
+	lengte toestaat.

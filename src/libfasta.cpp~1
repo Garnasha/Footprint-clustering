@@ -1,0 +1,165 @@
+#include "libfasta.h"
+#if 0
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <tuple>
+#include <vector>
+#include <numeric>
+#include <cstdio>
+#include <cassert>
+#include <algorithm>
+
+namespace ReadFasta{
+
+using std::string;
+using std::ifstream;
+using std::vector;
+
+//declarations (candidates for migration to header)
+
+const std::string datapath{"/home/sal/scriptie/data"};
+const std::string refpath{datapath+"reffa/"};
+const std::string monocytes{"Monocytes_0.05FDR_FOOTPRINTS"};
+
+struct Nucleotide{
+    char const base;
+
+    Nucleotide(char c):base(c){}
+};
+
+
+
+struct Chromosome{
+    std::string const name;
+    std::vector<Nucleotide> const seq;
+};
+
+
+class Footprint{
+public:
+    std::string const chrN;
+    std::vector<Nucleotide> const seq;
+    std::pair<size_t,size_t> const loc;
+
+    Footprint(Chromosome const &,size_t,size_t);
+};
+
+//End "header"
+#endif
+namespace ReadFasta{
+
+
+std::string to_string(std::vector<Nucleotide> const & seq){
+    return std::string(seq.begin(),seq.end());
+}
+
+//Begin .cpp proper
+Footprint::Footprint(Chromosome const & chr,size_t begin,size_t end):
+    chrN(chr.name),
+    seq(chr.seq.begin()+begin,chr.seq.begin()+end),
+    loc(begin,end)
+{}
+
+vector<string> readlines(string const & fname){
+    ifstream file{fname.c_str()};
+    string tmp;
+    vector<string> ret;
+    if(!file)
+        std::cerr << "Could not open file " << fname << std::endl;
+    while(file){
+        getline(file,tmp);
+        if(tmp.length()>0)
+            ret.push_back(tmp);
+    }
+    return ret;
+}
+
+template <typename BinOp,typename Ret_t,typename Iterable>
+Ret_t reduce(BinOp const & op, Ret_t const & base,Iterable const & xs){
+    return std::accumulate(xs.begin(),xs.end(),base,op);
+}
+
+Chromosome readfa(std::string const & chrN){ 
+    auto lines = readlines(refpath+chrN+".fa");
+    std::string blob;// = std::accumulate(lines.begin()+1,lines.end(),string{});
+    lines.erase(lines.begin()); 
+    for(auto s:lines){
+        blob.append(s);
+    }
+    return Chromosome{chrN, vector<Nucleotide>(blob.begin(),blob.end())}; 
+}
+
+std::vector<std::string> split(std::string const & s,char delim){
+    //std::cout << "splitting '" << s << "' on " << delim << std::endl;
+    std::vector<std::string> ret;
+    auto begin = s.begin();
+    auto end = begin;
+    while (end != s.end()){
+        //std::cout << "splitloop" << std::endl;
+        while(*begin == delim && begin != s.end()) ++begin;
+        //std::cout << "found begin" << std::endl;
+        end = begin;
+        while(*end != delim && end != s.end()) ++end;
+        //std::cout << "found end" << std::endl;
+        if (distance(begin,end) > 0)
+            ret.push_back(std::string(begin,end));
+        begin = end;
+    }
+    //std::cout << "done splitting" << std::endl;
+    return ret;
+}
+
+
+Footprint parsefootprint(Chromosome const & chr,std::string const & entry){
+    auto splitent = split(entry,'\t');
+    assert(chr.name==splitent[0]);
+    return Footprint(chr,stoull(splitent[1]),stoull(splitent[2]));
+}
+
+template<typename V,typename T>
+V & pushifnew(V & v, T && e){
+    //std::cout << "Attempting to push " << e <<"... ";
+    if (v.size() == 0 || v[v.size()-1] != e)
+        v.push_back(e);
+    //std::cout << std::endl;
+    return v;
+}
+
+std::vector<Footprint> read_footprints(std::string const fpfilename){
+    std::vector<std::string> fpfile(readlines(fpfilename)); 
+    /*std::sort(
+            fpfile.begin(),
+            fpfile.end(),
+            [](string const & l,string const & r){
+                return split(l,'\t')[0] < split(r,'\t')[0];
+                }
+            );*/
+    std::vector<std::string> chrlist;
+    std::cout << "Read fpfile, extracting chrnames..." <<std::endl;
+    for(auto s : fpfile){
+        assert(s.length()>0);
+        pushifnew(chrlist,split(s,'\t')[0]);
+    }
+    /*std::transform(
+            fpfile.begin(),
+            fpfile.end(),
+            chrlist.begin(),
+            [](string const&s) {return split(s,'\t')[0];}
+            );*/
+    std::vector<Footprint> footprints;
+    for(auto chrN : chrlist){
+        std::cout << "Reading " << chrN << std::endl;
+        Chromosome chr = readfa(chrN);
+        std::cout << "Read " << chrN << std::endl;
+        std::vector<Footprint> listcomp;//start Julia list comp...
+        for(auto s : fpfile) 
+            if(split(s,'\t')[0] == chrN)
+                listcomp.push_back(parsefootprint(chr,s));
+        footprints.insert(footprints.end(),listcomp.begin(),listcomp.end());
+    }
+    return footprints;
+}
+
+
+}//namespace ReadFasta

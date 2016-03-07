@@ -68,7 +68,7 @@ struct BlindFootprint{
 /// A footprint sequence and location.
 class Footprint{
 public:
-    /// Which chromosme the footprint is located on.
+    /// Which chromosome the footprint is located on.
     std::string chrN;
     std::vector<Nucleotide> seq;
     /// \todo Replace this by size_t start,end; and refactor.

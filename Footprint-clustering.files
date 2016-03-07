@@ -1,0 +1,7 @@
+oldsrc/libdna.cpp
+oldsrc/libdna.h
+oldsrc/main.cpp
+oldsrc/mstunion.h
+src/libfasta.cpp
+src/libfasta.h
+src/main.cpp

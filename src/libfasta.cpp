@@ -32,27 +32,31 @@ namespace ReadFasta{
 std::string to_string(std::vector<Nucleotide> const & seq){
     return std::string(seq.begin(),seq.end());
 }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"
 /// Simple constructor, looks up and stores sequence and metadata.
 FullFootprint::FullFootprint(Chromosome const & chr,size_t begin,size_t end):
     chrN(chr.name),
-    seq(chr.seq.begin()+begin,chr.seq.begin()+end),
+    seq(chr.seq.begin()+(long)begin,chr.seq.begin()+(long)end),
     loc(begin,end)
 {}
+#pragma clang diagnostic pop
 
 /// Pretty-printing string cast.
 
 /// \return A single-line pretty-printing representation. 
 FullFootprint::operator std::string () const {
-    return this->chrN + " " +                                     //chrN
-        std::string(this->seq.begin(),this->seq.end()) +          //seq
-        " (" + this->loc.first << ", " + this->loc.second + ")";  //loc
+    return this->chrN + " "                                  //chrN
+            + std::string(this->seq.begin(),this->seq.end()) //seq
+            + " (" + std::to_string(this->loc.first) +", "
+            + std::to_string(this->loc.second) + ")";        //loc
 }
 
 /// Slurp a file by lines
 
 /// Opens and slurps a text file, splitting on lines.
 /// \return File contents as a vector of lines.
+
 std::vector<std::string> readlines(string const & fname){
     ifstream file{fname.c_str()};
     //TODO(Sal): Maybe replace/supplement this with an exception.
@@ -74,23 +78,20 @@ std::vector<std::string> readlines(string const & fname){
 
 /// Opens and slurps the fasta file associated with the chromosome label $chrN.
 /// \return A Chromosome with the sequence in the file and the proper metadata.
+
 Chromosome readfa(std::string const & chrN){ 
     auto file = std::ifstream{refpath+chrN+".fa"};
     //TODO(Sal): Maybe replace/supplement this with an exception.
     if(!file)
         std::cerr << "Error opening file " << refpath+chrN+".fa" << std::endl;
     std::string tmp;
-    std::vector<Nucleotide> sequence;
+    std::vector<Nucleotide> seq;
     std::getline(file,tmp);
     while(file){
         getline(file,tmp);
-        sequence.insert(sequence.end(),tmp.begin(),tmp.end());
+        seq.insert(seq.end(),tmp.begin(),tmp.end());
     }
-    return 
-        Chromosome {
-        chrN, 
-        vector<Nucleotide>(sequence)
-        };
+    return  Chromosome { chrN, std::vector<Nucleotide>(seq) };
 }
 
 /// Splits s on delim
@@ -112,12 +113,12 @@ std::vector<std::string> split(std::string const & s,char delim){
     return ret;
 }
 
-// Appends a new item if unequal to last element
+/// Appends a new item if unequal to last element
 
-// \arg &coll A collection storing elements of template type T
-// \arg el An object of template type T
-// Appends el to coll except if this duplicates the last element of coll.
-// \return coll, by-ref
+/// \arg &coll A collection storing elements of template type T
+/// \arg el An object of template type T
+/// Appends el to coll except if this duplicates the last element of coll.
+/// \return coll, by-ref
 template<typename V,typename T>
 V & pushifnew(V & coll, T && el){
     if (coll.size() == 0 || coll[coll.size()-1] != el)
@@ -127,13 +128,47 @@ V & pushifnew(V & coll, T && el){
 
 // Start of new code
 
+std::istream & getfootprint(std::istream & input, BlindFootprint & fp) {
+
+}
+
+std::unordered_map<std::string,std::vector<Location>> read_fpfile(
+        std::string const & fpfilename) {
+    std::ifstream fpfile{fpfilename};
+    std::unordered_map<std::string,std::vector<Location>> store;
+    BlindFootprint buffer;
+    while(getfootprint(fpfile,buffer)){
+        store[buffer.chrN].push_back(std::move(buffer.loc));
+    }
+    return store;
+}
+
+std::unordered_map<std::string,std::vector<Footprint>> readfootprints(
+        std::string const & fpfilename) {
+    std::unordered_map<std::string,std::vector<Location>> blind_store{
+        read_fpfile(fpfilename)};
+    std::unordered_map<std::string,std::vector<Footprint>> store;
+    for (auto entry : blind_store) {
+        Chromosome ref{readfa(entry.first)};
+        std::vector<Footprint> footprints;
+        for (Location loc : entry.second){
+            footprints.push_back(Footprint{ref,loc});
+        }
+        if (!store.insert(std::make_pair(entry.first,footprints)).second){
+            std::cerr << "PANIC! Impossible duplicate key in hash table." <<
+                         "\nAborting..." << std::endl;
+            assert(false);
+        }
+    }
+}
+
 
 
 // End of new code
 
 //TODO: refactor to create a collection of BlindFootprint per chromosome.
 FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry){
-    auto splitent = split(entry,'\t');
+    std::vector<std::string> splitent{split(entry,'\t')};
     assert(chr.name==splitent[0]);
     return FullFootprint(chr,stoull(splitent[1]),stoull(splitent[2]));
 }
@@ -172,6 +207,5 @@ std::vector<FullFootprint> read_footprints(std::string const fpfilename){
     }
     return footprints;
 }
-
 
 }//namespace ReadFasta

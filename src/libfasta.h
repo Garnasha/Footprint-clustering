@@ -33,6 +33,7 @@
 #include <cstdio>
 #include <cassert>
 #include <algorithm>
+#include <unordered_map>
 
 namespace ReadFasta{
 
@@ -45,6 +46,9 @@ const std::string datapath{"/home/sal/scriptie/data/"};
 const std::string refpath{datapath+"reffa/"};
 const std::string monocytes{"Monocytes_0.05FDR_FOOTPRINTS"};
 
+typedef std::pair<size_t,size_t> Slice;
+typedef Slice Location;
+
 struct Nucleotide{
     char base;
     
@@ -52,7 +56,13 @@ struct Nucleotide{
     operator char () const {return base;}
 };
 
+/// Nucleotide sequence class. (UNIMPLEMENTED)
+
+/// Alternative for std::vector<Nucleotide>. Provides utilities like complement
+/// and similarity scoring, and might be stored more compactly.
+/// \todo This needs to be implemented as described above.
 class Sequence{
+    //TODO: Implement features promised in documentation
 
 };
 
@@ -64,11 +74,12 @@ struct Chromosome{
 
 struct BlindFootprint{
     std::string chrN;
-    std::pair<size_t,size_t> loc;
+    Location loc;
 };
 
 struct Footprint{
-
+    Sequence seq;
+    Location loc;
 };
 
 /// A footprint sequence and location.
@@ -78,11 +89,13 @@ public:
     std::string chrN;
     std::vector<Nucleotide> seq;
     /// \todo Replace this by size_t start,end; and refactor.
-    std::pair<size_t,size_t> loc;
+    Location loc;
     
     FullFootprint(Chromosome const & chr,size_t start,size_t end);
     explicit operator std::string () const;
 };
+
+std::istream & getfootprint(std::istream & input, BlindFootprint & fp);
 
 std::string to_string(std::vector<Nucleotide> const & seq);
 

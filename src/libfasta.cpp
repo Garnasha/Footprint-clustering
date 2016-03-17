@@ -32,6 +32,7 @@ namespace ReadFasta{
 std::string to_string(std::vector<Nucleotide> const & seq){
     return std::string(seq.begin(),seq.end());
 }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wold-style-cast"
 /// Simple constructor, looks up and stores sequence and metadata.

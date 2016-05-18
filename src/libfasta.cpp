@@ -46,6 +46,7 @@ FullFootprint::FullFootprint(Chromosome const & chr,size_t begin,size_t end):
 /// Pretty-printing string cast.
 
 /// \return A single-line pretty-printing representation. 
+
 FullFootprint::operator std::string () const {
     return this->chrN + " "                                  //chrN
             + std::string(this->seq.begin(),this->seq.end()) //seq
@@ -57,7 +58,7 @@ FullFootprint::operator std::string () const {
 
 /// Opens and slurps a text file, splitting on lines.
 /// \return File contents as a vector of lines.
-
+//
 std::vector<std::string> readlines(string const & fname){
     ifstream file{fname.c_str()};
     //TODO(Sal): Maybe replace/supplement this with an exception.
@@ -79,7 +80,7 @@ std::vector<std::string> readlines(string const & fname){
 
 /// Opens and slurps the fasta file associated with the chromosome label $chrN.
 /// \return A Chromosome with the sequence in the file and the proper metadata.
-
+//
 Chromosome readfa(std::string const & chrN){ 
     auto file = std::ifstream{refpath+chrN+".fa"};
     //TODO(Sal): Maybe replace/supplement this with an exception.
@@ -99,6 +100,7 @@ Chromosome readfa(std::string const & chrN){
 
 /// Splits s on delim, discarding any delim characters.
 /// \return An in-order vector of substrings of s.
+//
 std::vector<std::string> split(std::string const & s,char delim){
     std::vector<std::string> ret;
     auto begin = s.begin();
@@ -120,6 +122,7 @@ std::vector<std::string> split(std::string const & s,char delim){
 /// \arg el An object of template type T
 /// Appends el to coll except if this duplicates the last element of coll.
 /// \return coll, by-ref
+//
 template<typename V,typename T>
 V & pushifnew(V & coll, T && el){
     if (coll.size() == 0 || coll[coll.size()-1] != el)
@@ -128,10 +131,53 @@ V & pushifnew(V & coll, T && el){
 }
 
 // Start of new code
-
+#if 0
 std::istream & getfootprint(std::istream & input, BlindFootprint & fp) {
+    //Some bad experience with [fs]scanf... not sure it's optimized properly.
+    assert(input);
+    //parse chromosome name
+    auto chrname = [](std::ifstream & input) constexpr -> std::string {
+        char buffer[11];
+        for(size_t i = 0;i<11;++i){
+            int ci = input.get();
+            if(ci == ' '){
+                buffer[i]='\0';
+                break;
+            }
+            if (std::char_traits<char>::not_eof(ci) &&
+                    is_alphanumeric(static_cast<char>(ci))) {
+                buffer[i] = static_cast<char>(ci);
+            }
+            else {
+                throw std::domain_error{"Bad fasta entry (1)."};
+            }
+        }
 
+        buffer[10] = '\0';
+        return std::string{buffer};
+    }(input);
+
+    //parse starting index on chromosome
+    auto chrname = [](std::ifstream & input) constexpr -> int {
+        for(size_t i = 0;i<11;++i){
+            int ci = input.get();
+            switch(ci){
+                case std::char_traits<char>::eof() :
+                case '\n' :
+                    buffer[i]='\0';
+                    break;
+                default:
+                    if (is_numeric(ci)){
+                        buffer[i] = ci;
+                    }
+                    else {
+                        throw std::domain_error{"Bad fasta entry (2)."};
+                    }
+            }
+        }
+    }
 }
+#endif
 
 std::unordered_map<std::string,std::vector<Location>> read_fpfile(
         std::string const & fpfilename) {
@@ -151,9 +197,9 @@ std::unordered_map<std::string,std::vector<Footprint>> readfootprints(
     std::unordered_map<std::string,std::vector<Footprint>> store;
     for (auto entry : blind_store) {
         Chromosome ref{readfa(entry.first)};
-        std::vector<Footprint> footprints;
+        std::vector<Footprint> footprints{};
         for (Location loc : entry.second){
-            footprints.push_back(Footprint{ref,loc});
+            footprints.push_back(Footprint{Sequence{ref.seq},loc});
         }
         if (!store.insert(std::make_pair(entry.first,footprints)).second){
             std::cerr << "PANIC! Impossible duplicate key in hash table." <<
@@ -161,6 +207,7 @@ std::unordered_map<std::string,std::vector<Footprint>> readfootprints(
             assert(false);
         }
     }
+    return store;
 }
 
 

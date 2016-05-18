@@ -62,8 +62,18 @@ struct Nucleotide{
 /// and similarity scoring, and might be stored more compactly.
 /// \todo This needs to be implemented as described above.
 class Sequence{
+private:
+    std::vector<Nucleotide> const seq;
     //TODO: Implement features promised in documentation
+public:
+    Sequence(std::vector<Nucleotide> seq): seq(seq){}
 
+    std::vector<Nucleotide> const & getseq() const {
+        return seq;
+    }
+    operator std::vector<Nucleotide> () const {
+        return seq;
+    }
 };
 
 struct Chromosome{

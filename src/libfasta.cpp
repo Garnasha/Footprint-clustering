@@ -179,6 +179,14 @@ std::istream & getfootprint(std::istream & input, BlindFootprint & fp) {
 }
 #endif
 
+/// Slurps a footprint file, indexing footprints by chromosome
+
+/// \arg fpfilename The full name (including path) of the fp file to slurp.
+/// Splits each line of the footprint file into a chromosome identifier and a
+/// location (i.e. start and stop indices), adding the location to the list
+/// identified by the chromosome identifier in the map to be returned.
+/// \return An associative map, linking each chromosome identifier to a vector
+/// of all locations marked on that chromosome.
 std::unordered_map<std::string,std::vector<Location>> read_fpfile(
         std::string const & fpfilename) {
     std::ifstream fpfile{fpfilename};

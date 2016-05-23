@@ -24,14 +24,17 @@
 #ifndef LIBFASTA_H
 #define LIBFASTA_H
 
+#include <cstdio>
+#include <cassert>
+
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <tuple>
+
 #include <vector>
+#include <tuple>
+
 #include <numeric>
-#include <cstdio>
-#include <cassert>
 #include <algorithm>
 #include <unordered_map>
 
@@ -105,7 +108,7 @@ public:
     explicit operator std::string () const;
 };
 
-std::istream & getfootprint(std::istream & input, BlindFootprint & fp);
+bool getfootprint(FILE * input, BlindFootprint & fp);
 
 std::string to_string(std::vector<Nucleotide> const & seq);
 

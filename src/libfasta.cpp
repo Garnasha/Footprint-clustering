@@ -48,10 +48,10 @@ FullFootprint::FullFootprint(Chromosome const & chr,size_t begin,size_t end):
 /// \return A single-line pretty-printing representation. 
 
 FullFootprint::operator std::string () const {
-    return this->chrN + " "                                  //chrN
-            + std::string(this->seq.begin(),this->seq.end()) //seq
-            + " (" + std::to_string(this->loc.first) +", "
-            + std::to_string(this->loc.second) + ")";        //loc
+    return chrN + " "                                  //chrN
+            + std::string(seq.begin(),seq.end())       //seq
+            + " (" + std::to_string(loc.first) +", "
+            + std::to_string(loc.second) + ")";        //loc
 }
 
 /// Slurp a file by lines
@@ -62,7 +62,7 @@ FullFootprint::operator std::string () const {
 std::vector<std::string> readlines(string const & fname){
     ifstream file{fname.c_str()};
     //TODO(Sal): Maybe replace/supplement this with an exception.
-    if(!file) 
+    if(!file)
         std::cerr << "Could not open file " << fname << std::endl;
 
     string tmp;
@@ -93,7 +93,7 @@ Chromosome readfa(std::string const & chrN){
         getline(file,tmp);
         seq.insert(seq.end(),tmp.begin(),tmp.end());
     }
-    return  Chromosome { chrN, std::vector<Nucleotide>(seq) };
+    return Chromosome {chrN, std::vector<Nucleotide>(seq)};
 }
 
 /// Splits s on delim
@@ -179,9 +179,32 @@ std::istream & getfootprint(std::istream & input, BlindFootprint & fp) {
 }
 #endif
 
-/// Slurps a footprint file, indexing footprints by chromosome
+/// Parses a single footprint from input file to by-ref buffer, returns success.
+
+/// Takes a file opened for reading, and a reference to a BlindFootprint.
+/// Assumes the next thing in the open filestream is a footprint specification,
+/// parses this, and overwrites the given footprint with it, returning true if
+/// the parse appears succesful (false on EOF)
+/// \arg input A file opened for reading, pointing at a footprint or EOF.
+/// \arg buffer A BlindFootprint to be overwritten by parse.
+/// \return True on succesful parse, false on EOF, undef (likely true) otherwise
+bool getfootprint(FILE * input, BlindFootprint & buffer){
+    char chrNbuffer[8];
+    size_t begin,end;
+    bool retval =
+            EOF != std::fscanf(input,"%7s %zu %zu",chrNbuffer,&begin,&end);
+    buffer = BlindFootprint{
+             std::string{chrNbuffer},
+             Location{std::move(begin),std::move(end)}
+};
+    return retval;
+
+}
+
+/// Slurps a footprint file, indexing footprint locations by chromosome
 
 /// \arg fpfilename The full name (including path) of the fp file to slurp.
+///
 /// Splits each line of the footprint file into a chromosome identifier and a
 /// location (i.e. start and stop indices), adding the location to the list
 /// identified by the chromosome identifier in the map to be returned.
@@ -189,7 +212,7 @@ std::istream & getfootprint(std::istream & input, BlindFootprint & fp) {
 /// of all locations marked on that chromosome.
 std::unordered_map<std::string,std::vector<Location>> read_fpfile(
         std::string const & fpfilename) {
-    std::ifstream fpfile{fpfilename};
+    std::FILE * fpfile = std::fopen(fpfilename.c_str(),"r");
     std::unordered_map<std::string,std::vector<Location>> store;
     BlindFootprint buffer;
     while(getfootprint(fpfile,buffer)){
@@ -198,6 +221,17 @@ std::unordered_map<std::string,std::vector<Location>> read_fpfile(
     return store;
 }
 
+/// Load all Footprints, with sequences, indexed on chromosome.
+
+/// \arg fpfilename
+/// The full name (including path) of the footprint file to load.
+///
+/// Slurps the footprint file, then, for each chromosome, loads the reference
+/// sequence and looks up the sequence for every footprint Location on that
+/// chromosome. Combining Location and Sequence yields a full Footprint, which
+/// is stored, to be returned once all Footprints are read.
+/// \return An associative map, linking each chromosome identifier to a vector
+/// of all Footprints appearing on that chromosome.
 std::unordered_map<std::string,std::vector<Footprint>> readfootprints(
         std::string const & fpfilename) {
     std::unordered_map<std::string,std::vector<Location>> blind_store{
@@ -222,15 +256,17 @@ std::unordered_map<std::string,std::vector<Footprint>> readfootprints(
 
 // End of new code
 
-//TODO: refactor to create a collection of BlindFootprint per chromosome.
+// OBSOLETE: refactored into getfootprint, read_fpfile, readfootprints
 FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry){
     std::vector<std::string> splitent{split(entry,'\t')};
     assert(chr.name==splitent[0]);
     return FullFootprint(chr,stoull(splitent[1]),stoull(splitent[2]));
 }
 
+// Old Shame
+#if 0
 std::vector<FullFootprint> read_footprints(std::string const fpfilename){
-    std::vector<std::string> fpfile(readlines(fpfilename)); 
+    std::vector<std::string> fpfile(readlines(fpfilename));
     /*std::sort(
             fpfile.begin(),
             fpfile.end(),
@@ -256,12 +292,13 @@ std::vector<FullFootprint> read_footprints(std::string const fpfilename){
         Chromosome chr = readfa(chrN);
         std::cout << "Read " << chrN << std::endl;
         std::vector<FullFootprint> listcomp;//start Julia list comp...
-        for(auto s : fpfile) 
+        for(auto s : fpfile)
             if(split(s,'\t')[0] == chrN)
                 listcomp.push_back(parsefootprint(chr,s));
         footprints.insert(footprints.end(),listcomp.begin(),listcomp.end());
     }
     return footprints;
 }
+#endif
 
 }//namespace ReadFasta

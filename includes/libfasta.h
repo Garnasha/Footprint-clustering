@@ -59,6 +59,9 @@ struct Nucleotide{
     operator char () const {return base;}
 };
 
+typedef std::vector<Nucleotide> Sequence;
+
+#if 0
 /// Nucleotide sequence class. (UNIMPLEMENTED)
 
 /// Alternative for std::vector<Nucleotide>. Provides utilities like complement
@@ -70,6 +73,8 @@ private:
     //TODO: Implement features promised in documentation
 public:
     Sequence(std::vector<Nucleotide> seq): seq(seq){}
+    Sequence(std::vector<Nucleotide> const & seq): seq(seq){}
+    Sequence(std::vector<Nucleotide> && seq): seq(seq){}
 
     std::vector<Nucleotide> const & getseq() const {
         return seq;
@@ -78,6 +83,7 @@ public:
         return seq;
     }
 };
+#endif
 
 struct Chromosome{
     std::string const name;
@@ -96,15 +102,14 @@ struct Footprint{
 };
 
 /// A footprint sequence and location.
-class FullFootprint{
+class StandaloneFootprint{
 public:
     /// Which chromosome the footprint is located on.
     std::string chrN;
     std::vector<Nucleotide> seq;
-    /// \todo Replace this by size_t start,end; and refactor.
     Location loc;
     
-    FullFootprint(Chromosome const & chr,size_t start,size_t end);
+    StandaloneFootprint(Chromosome const & chr,size_t start,size_t end);
     explicit operator std::string () const;
 };
 
@@ -119,12 +124,12 @@ Chromosome readfa(std::string const & chrN);
 std::tuple<std::string,size_t,size_t> split_fp(std::string const & entry);
 BlindFootprint split_fp(std::string const & entry);
 
-FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry);
+StandaloneFootprint parsefootprint(Chromosome const & chr,std::string const & entry);
 
 template<typename V,typename T>
 V & pushifnew(V & v, T && e);
 
-std::vector<FullFootprint> read_footprints(std::string const fpfilename);
+std::vector<StandaloneFootprint> read_footprints(std::string const fpfilename);
 
 
 }//namespace ReadFasta

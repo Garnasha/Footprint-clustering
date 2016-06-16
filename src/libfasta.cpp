@@ -28,31 +28,57 @@
 /// Namespace for reading fasta format files and extracting footprints.
 namespace ReadFasta{
 
-/// Overload of std::to_string for argument std::vector<Nucleotide>
-std::string to_string(std::vector<Nucleotide> const & seq){
-    return std::string(seq.begin(),seq.end());
+Nucleotide::Nucleotide(char c): 
+    base(c) 
+{}
+
+Nucleotide::operator char () const {
+    return base;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wold-style-cast"
+Sequence::Sequence(std::vector<Nucleotide> seq):
+    seq(std::move(seq))
+{}
+
+Sequence::Sequence(std::vector<Nucleotide> const & chrseq, Location loc):
+    seq(chrseq.begin()+loc.first,chrseq.begin()+loc.second)
+{}
+
+
+std::vector<Nucleotide> const & Sequence::getseq() const {
+    return seq;
+}
+
+Sequence::operator std::vector<Nucleotide> () const {
+    return seq;
+}
+
+
 /// Simple constructor, looks up and stores sequence and metadata.
-FullFootprint::FullFootprint(Chromosome const & chr,size_t begin,size_t end):
+StandaloneFootprint::StandaloneFootprint(
+        Chromosome const & chr,
+        size_t begin,
+        size_t end):
     chrN(chr.name),
-    seq(chr.seq.begin()+(long)begin,chr.seq.begin()+(long)end),
+    seq(chr.seq.begin()+begin,chr.seq.begin()+end),
     loc(begin,end)
 {}
-#pragma clang diagnostic pop
 
-/// Pretty-printing string cast.
-
+/// \brief Pretty-printing string cast.
 /// \return A single-line pretty-printing representation. 
-
-FullFootprint::operator std::string () const {
+//
+StandaloneFootprint::operator std::string () const {
     return chrN + " "                                  //chrN
             + std::string(seq.begin(),seq.end())       //seq
             + " (" + std::to_string(loc.first) +", "
             + std::to_string(loc.second) + ")";        //loc
 }
+
+/// Overload of std::to_string for argument std::vector<Nucleotide>
+std::string to_string(std::vector<Nucleotide> const & seq){
+    return std::string(seq.begin(),seq.end());
+}
+
 
 /// Slurp a file by lines
 
@@ -116,13 +142,15 @@ std::vector<std::string> split(std::string const & s,char delim){
     return ret;
 }
 
+
+#if 0 //Should be unused now, and is a dirty template
+
 /// Appends a new item if unequal to last element
 
 /// \arg &coll A collection storing elements of template type T
 /// \arg el An object of template type T
 /// Appends el to coll except if this duplicates the last element of coll.
 /// \return coll, by-ref
-//
 template<typename V,typename T>
 V & pushifnew(V & coll, T && el){
     if (coll.size() == 0 || coll[coll.size()-1] != el)
@@ -130,8 +158,10 @@ V & pushifnew(V & coll, T && el){
     return coll;
 }
 
+#endif
+
 // Start of new code
-#if 0
+#if 0 //shame on me
 std::istream & getfootprint(std::istream & input, BlindFootprint & fp) {
     //Some bad experience with [fs]scanf... not sure it's optimized properly.
     assert(input);
@@ -192,11 +222,11 @@ bool getfootprint(FILE * input, BlindFootprint & buffer){
     char chrNbuffer[8];
     size_t begin,end;
     bool retval =
-            EOF != std::fscanf(input,"%7s %zu %zu",chrNbuffer,&begin,&end);
+        EOF != std::fscanf(input,"%7s %zu %zu",chrNbuffer,&begin,&end);
     buffer = BlindFootprint{
-             std::string{chrNbuffer},
-             Location{std::move(begin),std::move(end)}
-};
+        std::string{chrNbuffer},
+            Location{std::move(begin),std::move(end)}
+    };
     return retval;
 
 }
@@ -232,8 +262,9 @@ std::unordered_map<std::string,std::vector<Location>> read_fpfile(
 /// is stored, to be returned once all Footprints are read.
 /// \return An associative map, linking each chromosome identifier to a vector
 /// of all Footprints appearing on that chromosome.
-std::unordered_map<std::string,std::vector<Footprint>> readfootprints(
-        std::string const & fpfilename) {
+//
+//fp_map :== std::unordered_map<std::string,std::vector<Footprint>> 
+fp_map readfootprints(std::string const & fpfilename) {
     std::unordered_map<std::string,std::vector<Location>> blind_store{
         read_fpfile(fpfilename)};
     std::unordered_map<std::string,std::vector<Footprint>> store;
@@ -256,12 +287,15 @@ std::unordered_map<std::string,std::vector<Footprint>> readfootprints(
 
 // End of new code
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
 // OBSOLETE: refactored into getfootprint, read_fpfile, readfootprints
-FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry){
+StandaloneFootprint parsefootprint(Chromosome const & chr,std::string const & entry){
     std::vector<std::string> splitent{split(entry,'\t')};
     assert(chr.name==splitent[0]);
-    return FullFootprint(chr,stoull(splitent[1]),stoull(splitent[2]));
+    return StandaloneFootprint(chr,stoull(splitent[1]),stoull(splitent[2]));
 }
+#pragma clang diagnostic pop
 
 // Old Shame
 #if 0

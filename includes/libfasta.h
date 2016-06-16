@@ -26,6 +26,7 @@
 
 #include <cstdio>
 #include <cassert>
+#include <cstddef>
 
 #include <iostream>
 #include <fstream>
@@ -50,44 +51,39 @@ const std::string refpath{datapath+"reffa/"};
 const std::string monocytes{"Monocytes_0.05FDR_FOOTPRINTS"};
 
 typedef std::pair<size_t,size_t> Slice;
+//template <typename T>
+ //   using Slice = std::pair< typename std::vector<T>::difference_type, 
+  //        typename std::vector<T>::difference_type >;
 typedef Slice Location;
 
 struct Nucleotide{
     char base;
     
-    Nucleotide(char c):base(c){}
-    operator char () const {return base;}
+    Nucleotide(char c);
+    operator char () const;
 };
 
-typedef std::vector<Nucleotide> Sequence;
 
-#if 0
 /// Nucleotide sequence class. (UNIMPLEMENTED)
 
 /// Alternative for std::vector<Nucleotide>. Provides utilities like complement
-/// and similarity scoring, and might be stored more compactly.
+/// and similarity scoring.
 /// \todo This needs to be implemented as described above.
 class Sequence{
 private:
-    std::vector<Nucleotide> const seq;
+    std::vector<Nucleotide> seq;
     //TODO: Implement features promised in documentation
 public:
-    Sequence(std::vector<Nucleotide> seq): seq(seq){}
-    Sequence(std::vector<Nucleotide> const & seq): seq(seq){}
-    Sequence(std::vector<Nucleotide> && seq): seq(seq){}
+    Sequence(std::vector<Nucleotide> seq);
+    Sequence(std::vector<Nucleotide> const & chrseq, Location loc);
 
-    std::vector<Nucleotide> const & getseq() const {
-        return seq;
-    }
-    operator std::vector<Nucleotide> () const {
-        return seq;
-    }
+    std::vector<Nucleotide> const & getseq() const;
+    operator std::vector<Nucleotide> () const;
 };
-#endif
 
 struct Chromosome{
-    std::string const name;
-    std::vector<Nucleotide> const seq;
+    std::string name;
+    std::vector<Nucleotide> seq;
 };
 
 
@@ -101,6 +97,8 @@ struct Footprint{
     Location loc;
 };
 
+typedef std::unordered_map<std::string,std::vector<Footprint>> fp_map;
+
 /// A footprint sequence and location.
 class StandaloneFootprint{
 public:
@@ -113,23 +111,35 @@ public:
     explicit operator std::string () const;
 };
 
-bool getfootprint(FILE * input, BlindFootprint & fp);
-
 std::string to_string(std::vector<Nucleotide> const & seq);
 
 std::vector<std::string> readlines(string const & fname);
 
-Chromosome readfa(std::string const & chrN); 
+Chromosome readfa(std::string const & chrN);
 
+std::vector<std::string> split(std::string const & s, char delim);
+
+bool getfootprint(FILE * input, BlindFootprint & fp);
+
+std::unordered_map<std::string, std::vector<Location>> read_fpfile(
+        std::string const & fpfilename);
+
+fp_map readfootprints(std::string const & fpfilename);
+#if 0
 std::tuple<std::string,size_t,size_t> split_fp(std::string const & entry);
 BlindFootprint split_fp(std::string const & entry);
+#endif
 
 StandaloneFootprint parsefootprint(Chromosome const & chr,std::string const & entry);
 
+#if 0
 template<typename V,typename T>
 V & pushifnew(V & v, T && e);
+#endif
 
+#if 0 //Old Shame
 std::vector<StandaloneFootprint> read_footprints(std::string const fpfilename);
+#endif
 
 
 }//namespace ReadFasta

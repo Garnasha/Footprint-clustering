@@ -30,7 +30,9 @@
 
 #include "dnatypes.h"
 
+// Provided, not required internally
 #include "fullfootprint.h"
+
 namespace footprint_analysis {
 
 typedef std::pair<size_t,size_t> Slice;

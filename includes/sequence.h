@@ -27,8 +27,8 @@
 #include <string>
 #include <tuple>
 
+#include "nucleotide.h"
 namespace footprint_analysis {
-struct Nucleotide;
 
 /// Nucleotide sequence class. (UNIMPLEMENTED)
 

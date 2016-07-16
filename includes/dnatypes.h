@@ -29,15 +29,11 @@
 
 //provided but not used by dnatypes
 #include "sequence.h"
+#include "nucleotide.h"
 
 namespace footprint_analysis{
 
-struct Nucleotide{
-    char base;
 
-    Nucleotide(char c);
-    operator char () const;
-};
 
 struct Chromosome{
     std::string name;

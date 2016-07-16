@@ -28,34 +28,6 @@
 /// Namespace for reading fasta format files and extracting footprints.
 namespace footprint_analysis{
 
-Nucleotide::Nucleotide(char c): 
-    base(c) 
-{}
-
-Nucleotide::operator char () const {
-    return base;
-}
-
-Sequence::Sequence(std::vector<Nucleotide> seq):
-    seq(std::move(seq))
-{}
-
-Sequence::Sequence(std::vector<Nucleotide> const & chrseq, Location loc):
-    seq(chrseq.begin()+loc.first,chrseq.begin()+loc.second)
-{}
-
-
-std::vector<Nucleotide> const & Sequence::getseq() const {
-    return seq;
-}
-
-Sequence::operator std::vector<Nucleotide> () const {
-    return seq;
-}
-
-
-
-
 /// Overload of std::to_string for argument std::vector<Nucleotide>
 std::string to_string(std::vector<Nucleotide> const & seq){
     return std::string(seq.begin(),seq.end());

@@ -20,28 +20,17 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-#include "sequence.h"
+#ifndef NUCLEOTIDE_H
+#define NUCLEOTIDE_H
 
-namespace footprint_analysis{
-Sequence::Sequence():
-    seq()
-{}
+namespace footprint_analysis {
+struct Nucleotide{
+    char base;
 
-Sequence::Sequence(std::vector<Nucleotide> seq):
-    seq(std::move(seq))
-{}
+    Nucleotide(char c);
+    operator char () const;
+};
 
-Sequence::Sequence(std::vector<Nucleotide> const & chrseq, Location loc):
-    seq(chrseq.begin()+loc.first,chrseq.begin()+loc.second)
-{}
+} // namespace footprint analysis
 
-
-std::vector<Nucleotide> const & Sequence::getseq() const {
-    return seq;
-}
-
-Sequence::operator std::vector<Nucleotide> () const {
-    return seq;
-}
-
-} // namespace footprint_analysis
+#endif // NUCLEOTIDE_H

@@ -19,3 +19,5 @@ includes/sequence.h
 src/sequence.cpp
 includes/fullfootprint.h
 src/fullfootprint.cpp
+includes/nucleotide.h
+src/nucleotide.cpp

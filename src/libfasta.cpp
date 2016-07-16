@@ -26,7 +26,7 @@
 /// \brief Library for dealing with fasta files and footprints.
 
 /// Namespace for reading fasta format files and extracting footprints.
-namespace ReadFasta{
+namespace footprint_analysis{
 
 Nucleotide::Nucleotide(char c): 
     base(c) 
@@ -54,25 +54,7 @@ Sequence::operator std::vector<Nucleotide> () const {
 }
 
 
-/// Simple constructor, looks up and stores sequence and metadata.
-StandaloneFootprint::StandaloneFootprint(
-        Chromosome const & chr,
-        size_t begin,
-        size_t end):
-    chrN(chr.name),
-    seq(chr.seq.begin()+begin,chr.seq.begin()+end),
-    loc(begin,end)
-{}
 
-/// \brief Pretty-printing string cast.
-/// \return A single-line pretty-printing representation. 
-//
-StandaloneFootprint::operator std::string () const {
-    return chrN + " "                                  //chrN
-            + std::string(seq.begin(),seq.end())       //seq
-            + " (" + std::to_string(loc.first) +", "
-            + std::to_string(loc.second) + ")";        //loc
-}
 
 /// Overload of std::to_string for argument std::vector<Nucleotide>
 std::string to_string(std::vector<Nucleotide> const & seq){
@@ -263,16 +245,16 @@ std::unordered_map<std::string,std::vector<Location>> read_fpfile(
 /// \return An associative map, linking each chromosome identifier to a vector
 /// of all Footprints appearing on that chromosome.
 //
-//fp_map :== std::unordered_map<std::string,std::vector<Footprint>> 
+//fp_map :== std::unordered_map<std::string,std::vector<LocalFootprint>>
 fp_map readfootprints(std::string const & fpfilename) {
     std::unordered_map<std::string,std::vector<Location>> blind_store{
         read_fpfile(fpfilename)};
-    std::unordered_map<std::string,std::vector<Footprint>> store;
+    std::unordered_map<std::string,std::vector<LocalFootprint>> store;
     for (auto entry : blind_store) {
         Chromosome ref{readfa(entry.first)};
-        std::vector<Footprint> footprints{};
+        std::vector<LocalFootprint> footprints{};
         for (Location loc : entry.second){
-            footprints.push_back(Footprint{Sequence{ref.seq},loc});
+            footprints.push_back(LocalFootprint{Sequence{ref.seq},loc});
         }
         if (!store.insert(std::make_pair(entry.first,footprints)).second){
             std::cerr << "PANIC! Impossible duplicate key in hash table." <<
@@ -290,10 +272,10 @@ fp_map readfootprints(std::string const & fpfilename) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsign-conversion"
 // OBSOLETE: refactored into getfootprint, read_fpfile, readfootprints
-StandaloneFootprint parsefootprint(Chromosome const & chr,std::string const & entry){
+FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry){
     std::vector<std::string> splitent{split(entry,'\t')};
     assert(chr.name==splitent[0]);
-    return StandaloneFootprint(chr,stoull(splitent[1]),stoull(splitent[2]));
+    return FullFootprint(chr,stoull(splitent[1]),stoull(splitent[2]));
 }
 #pragma clang diagnostic pop
 

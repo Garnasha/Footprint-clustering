@@ -39,7 +39,10 @@
 #include <algorithm>
 #include <unordered_map>
 
-namespace ReadFasta{
+#include "dnatypes.h"
+#include "footprinttypes.h"
+
+namespace footprint_analysis{
 
 using std::string;
 using std::ifstream;
@@ -51,65 +54,12 @@ const std::string refpath{datapath+"reffa/"};
 const std::string monocytes{"Monocytes_0.05FDR_FOOTPRINTS"};
 
 typedef std::pair<size_t,size_t> Slice;
-//template <typename T>
- //   using Slice = std::pair< typename std::vector<T>::difference_type, 
-  //        typename std::vector<T>::difference_type >;
 typedef Slice Location;
 
-struct Nucleotide{
-    char base;
-    
-    Nucleotide(char c);
-    operator char () const;
-};
 
 
-/// Nucleotide sequence class. (UNIMPLEMENTED)
-
-/// Alternative for std::vector<Nucleotide>. Provides utilities like complement
-/// and similarity scoring.
-/// \todo This needs to be implemented as described above.
-class Sequence{
-private:
-    std::vector<Nucleotide> seq;
-    //TODO: Implement features promised in documentation
-public:
-    Sequence(std::vector<Nucleotide> seq);
-    Sequence(std::vector<Nucleotide> const & chrseq, Location loc);
-
-    std::vector<Nucleotide> const & getseq() const;
-    operator std::vector<Nucleotide> () const;
-};
-
-struct Chromosome{
-    std::string name;
-    std::vector<Nucleotide> seq;
-};
 
 
-struct BlindFootprint{
-    std::string chrN;
-    Location loc;
-};
-
-struct Footprint{
-    Sequence seq;
-    Location loc;
-};
-
-typedef std::unordered_map<std::string,std::vector<Footprint>> fp_map;
-
-/// A footprint sequence and location.
-class StandaloneFootprint{
-public:
-    /// Which chromosome the footprint is located on.
-    std::string chrN;
-    std::vector<Nucleotide> seq;
-    Location loc;
-    
-    StandaloneFootprint(Chromosome const & chr,size_t start,size_t end);
-    explicit operator std::string () const;
-};
 
 std::string to_string(std::vector<Nucleotide> const & seq);
 
@@ -130,7 +80,7 @@ std::tuple<std::string,size_t,size_t> split_fp(std::string const & entry);
 BlindFootprint split_fp(std::string const & entry);
 #endif
 
-StandaloneFootprint parsefootprint(Chromosome const & chr,std::string const & entry);
+FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry);
 
 #if 0
 template<typename V,typename T>

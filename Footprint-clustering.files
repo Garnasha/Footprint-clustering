@@ -12,3 +12,10 @@ oldsrc/main.cpp
 oldsrc/mstunion.h
 src/libfasta.cpp
 src/main.cpp
+includes/dnatypes.h
+includes/footprinttypes.h
+src/dnatypes.cpp
+includes/sequence.h
+src/sequence.cpp
+includes/fullfootprint.h
+src/fullfootprint.cpp

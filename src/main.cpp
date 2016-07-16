@@ -1,7 +1,7 @@
 #include "libfasta.h"
 #include <iostream>
 
-using namespace ReadFasta;
+using namespace footprint_analysis;
 
 int main(void){
     auto fps = read_footprints(datapath+monocytes);

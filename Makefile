@@ -10,6 +10,8 @@ MODE_F = -g $(OPTIMIZE_F)
 
 CLANG = clang++ $(WARN_F) $(STANDARD_F) $(MODE_F) $(INCLUDE_F)
 
+main.out: lib/libfasta.o src/main.cpp
+	$(CLANG) lib/libfasta.o src/main.cpp -o main.out
 
 lib/libfasta.o: src/libfasta.cpp includes/libfasta.h
 	$(CLANG) src/libfasta.cpp -c -o lib/libfasta.o

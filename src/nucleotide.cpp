@@ -22,6 +22,7 @@
 
 #include "nucleotide.h"
 
+
 namespace footprint_analysis {
 Nucleotide::Nucleotide(char c):
     base(c)
@@ -30,4 +31,10 @@ Nucleotide::Nucleotide(char c):
 Nucleotide::operator char () const {
     return base;
 }
+
+/// Overload of std::to_string for argument std::vector<Nucleotide>
+std::string to_string(std::vector<Nucleotide> const & seq){
+    return std::string(seq.begin(),seq.end());
+}
+
 } // namespace footprint_analysis

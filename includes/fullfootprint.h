@@ -37,7 +37,7 @@ class FullFootprint{
 public:
     /// Which chromosome the footprint is located on.
     std::string chrN;
-    std::vector<Nucleotide> seq;
+    Sequence seq;
     Location loc;
 
     FullFootprint(Chromosome const & chr,size_t start,size_t end);

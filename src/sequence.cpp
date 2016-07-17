@@ -23,6 +23,14 @@
 #include "sequence.h"
 
 namespace footprint_analysis{
+
+template <typename T>
+std::vector<T> index_slice(std::vector<T> const & v,size_t begin, size_t end) {
+    return std::vector<T>{
+        v.begin()+static_cast<std::ptrdiff_t>(begin),
+        v.begin()+static_cast<std::ptrdiff_t>(end)};
+}
+
 Sequence::Sequence():
     seq()
 {}
@@ -32,7 +40,12 @@ Sequence::Sequence(std::vector<Nucleotide> seq):
 {}
 
 Sequence::Sequence(std::vector<Nucleotide> const & chrseq, Location loc):
-    seq(chrseq.begin()+loc.first,chrseq.begin()+loc.second)
+    seq(index_slice(chrseq,loc.first,loc.second))
+{}
+
+Sequence::
+Sequence(std::vector<Nucleotide> const & chrseq, size_t begin, size_t end):
+    seq(index_slice(chrseq,begin,end))
 {}
 
 
@@ -44,4 +57,7 @@ Sequence::operator std::vector<Nucleotide> () const {
     return seq;
 }
 
+size_t Sequence::size() const {
+    return seq.size();
+}
 } // namespace footprint_analysis

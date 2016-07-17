@@ -21,3 +21,5 @@ includes/fullfootprint.h
 src/fullfootprint.cpp
 includes/nucleotide.h
 src/nucleotide.cpp
+src/obsoleted.cpp
+includes/obsoleted.h

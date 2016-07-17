@@ -57,12 +57,6 @@ typedef std::pair<size_t,size_t> Slice;
 typedef Slice Location;
 
 
-
-
-
-
-std::string to_string(std::vector<Nucleotide> const & seq);
-
 std::vector<std::string> readlines(string const & fname);
 
 Chromosome readfa(std::string const & chrN);
@@ -74,22 +68,9 @@ bool getfootprint(FILE * input, BlindFootprint & fp);
 std::unordered_map<std::string, std::vector<Location>> read_fpfile(
         std::string const & fpfilename);
 
-fp_map readfootprints(std::string const & fpfilename);
-#if 0
-std::tuple<std::string,size_t,size_t> split_fp(std::string const & entry);
-BlindFootprint split_fp(std::string const & entry);
-#endif
+fp_map load_fp_map(std::string const & fpfilename);
 
-FullFootprint parsefootprint(Chromosome const & chr,std::string const & entry);
-
-#if 0
-template<typename V,typename T>
-V & pushifnew(V & v, T && e);
-#endif
-
-#if 0 //Old Shame
-std::vector<StandaloneFootprint> read_footprints(std::string const fpfilename);
-#endif
+std::vector<FullFootprint> load_full_footprints(std::string const & fpfilename);
 
 
 }//namespace ReadFasta

@@ -29,7 +29,7 @@ FullFootprint::FullFootprint(
         size_t begin,
         size_t end):
     chrN(chr.name),
-    seq(chr.seq.begin()+begin,chr.seq.begin()+end),
+    seq(chr.seq,begin,end),
     loc(begin,end)
 {}
 
@@ -37,9 +37,9 @@ FullFootprint::FullFootprint(
 /// \return A single-line pretty-printing representation.
 //
 FullFootprint::operator std::string () const {
-    return chrN + " "                                  //chrN
-            + std::string(seq.begin(),seq.end())       //seq
+    return chrN + " "                                                   //chrN
+            + to_string(seq.getseq())                                   //seq
             + " (" + std::to_string(loc.first) +", "
-            + std::to_string(loc.second) + ")";        //loc
+            + std::to_string(loc.second) + ")";                         //loc
 }
 } // namespace footprint analysis

@@ -22,7 +22,8 @@
 
 #ifndef NUCLEOTIDE_H
 #define NUCLEOTIDE_H
-
+#include <string>
+#include <vector>
 namespace footprint_analysis {
 struct Nucleotide{
     char base;
@@ -30,6 +31,8 @@ struct Nucleotide{
     Nucleotide(char c);
     operator char () const;
 };
+
+std::string to_string(std::vector<Nucleotide> const & seq);
 
 } // namespace footprint analysis
 

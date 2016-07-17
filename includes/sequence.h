@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include <tuple>
+#include <cstddef>
 
 #include "nucleotide.h"
 namespace footprint_analysis {
@@ -46,9 +47,12 @@ public:
     Sequence();
     Sequence(std::vector<Nucleotide> seq);
     Sequence(std::vector<Nucleotide> const & chrseq, Location loc);
+    Sequence(std::vector<Nucleotide> const & chrseq, size_t begin, size_t end);
 
     std::vector<Nucleotide> const & getseq() const;
     operator std::vector<Nucleotide> () const;
+
+    size_t size() const;
 };
 
 } // namespace footprint_analysis

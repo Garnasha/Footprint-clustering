@@ -23,3 +23,7 @@ includes/nucleotide.h
 src/nucleotide.cpp
 src/obsoleted.cpp
 includes/obsoleted.h
+includes/minspantree.tpp
+includes/minspantree.h
+includes/minspantree.h
+src/minspantree.cpp

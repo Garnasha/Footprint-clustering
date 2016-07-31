@@ -20,34 +20,51 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#ifndef MINSPANTREE_H
-#define MINSPANTREE_H
+#ifndef MST_CLUSTER_TPP
+#define MST_CLUSTER_TPP
 
-#include <vector>
-#include <cstddef>
-#include <limits>
+#include "mst_cluster.h"
+#include <algorithm>
+#include <type_traits>
+#include <unordered_map>
 
 namespace footprint_analysis {
 namespace mst {
 
-template <typename Vertex, typename Weight>
-struct weighted_edge {
-    Vertex from;
-    Vertex to;
-    Weight weight;
+template <typename T, typename Ord>
+void remove_greatest_n(std::vector<T> & v, size_t n, Ord ordering) {
+    std::sort(v.begin(),v.end(),ordering);
+    v.resize(v.size()-n);
+} //done
 
-    static constexpr Weight unreachable = std::numeric_limits<Weight>::max();
-};
+template <typename Vertex, typename Edge>
+std::unordered_map<Vertex,std::vector<Edge>>
+build_adj_list(std::vector<Edge> const & edges) {
 
-using link = weighted_edge<size_t,unsigned int>;
+}
 
-template <typename T, typename Distfunc>
-size_t prim_update_memos (std::vector<T> const & nodes, Distfunc const & d,
-                        std::vector<bool> const & connected, size_t const added,
-                        std::vector<link> & memo);
+template <typename Vertex, typename Edge>
+std::vector<Cluster<Vertex>>
+collect_clusters(std::vector<Edge> const & edges) {
+    static_assert(std::is_same<Vertex,decltype(Edge::to)>(),
+                  "Edge::to is not a Vertex!");
+    std::unordered_map<Vertex,std::vector<Edge>> adj_list{build_adj_list(edges)};
+    std::unordered_set<Vertex> collected;
+    for (auto v : adj_list) {
+        if (collected.count(v.left) != 0){
+            continue;
+        }
 
-template <typename T, typename Distfunc>
-std::vector<link> prim_gen_mst(std::vector<T> const & nodes, Distfunc const & d);
+    }
+}
+
+template <typename Edge>
+std::vector<Cluster<size_t>> collect_clusters(std::vector<Edge> const & v) {
+    static_assert(std::is_same<size_t,decltype(Edge::to)>(),
+                  "Edge::to is not a size_t!");
+
+
+}
 } // namespace mst
 } // namespace footprint_analysis
-#endif // MINSPANTREE_H
+#endif // MST_CLUSTER_TPP

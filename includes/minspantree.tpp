@@ -37,8 +37,8 @@ size_t prim_update_memos (std::vector<T> const & nodes, Distfunc const & d,
     size_t candidate = 0;
     for (size_t i = 0; i < nodes.size(); ++i) {
         decltype(link::weight) w = d(nodes[added],nodes[i]);
-        if (w < memo[i].weight) {
-            memo[i] = link{added,i,d(added,i)};
+        if (w < memo[i].weight) { // found a closer node to i
+            memo[i] = link{added,i,w};
         }
         if (!connected[i] && // i is a valid candidate AND
                 (connected[candidate] || // the current candidate isn't, OR:
@@ -67,6 +67,7 @@ std::vector<link> prim_gen_mst(std::vector<T> const & nodes, Distfunc const & d)
         ++connected_count;
         candidate = prim_update_memos(nodes, d, connected, candidate, memo);
     } while (connected_count < nodes.size());
+    return ret_store;
 }
 
 } // namespace mst

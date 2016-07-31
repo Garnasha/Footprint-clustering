@@ -20,34 +20,17 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#ifndef MINSPANTREE_H
-#define MINSPANTREE_H
-
 #include <vector>
-#include <cstddef>
-#include <limits>
-
+#include <unordered_set>
+#include "minspantree.tpp"
+#ifndef MST_CLUSTER_H
+#define MST_CLUSTER_H
 namespace footprint_analysis {
 namespace mst {
+template <typename T>
+using Cluster = std::vector<T>;
 
-template <typename Vertex, typename Weight>
-struct weighted_edge {
-    Vertex from;
-    Vertex to;
-    Weight weight;
 
-    static constexpr Weight unreachable = std::numeric_limits<Weight>::max();
-};
-
-using link = weighted_edge<size_t,unsigned int>;
-
-template <typename T, typename Distfunc>
-size_t prim_update_memos (std::vector<T> const & nodes, Distfunc const & d,
-                        std::vector<bool> const & connected, size_t const added,
-                        std::vector<link> & memo);
-
-template <typename T, typename Distfunc>
-std::vector<link> prim_gen_mst(std::vector<T> const & nodes, Distfunc const & d);
 } // namespace mst
 } // namespace footprint_analysis
-#endif // MINSPANTREE_H
+#endif // MST_CLUSTER_H

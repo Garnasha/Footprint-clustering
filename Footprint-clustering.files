@@ -27,3 +27,5 @@ includes/minspantree.tpp
 includes/minspantree.h
 includes/minspantree.h
 src/minspantree.cpp
+includes/mst_cluster.tpp
+includes/mst_cluster.h

@@ -4,11 +4,16 @@
 
 First, since this is a cross-disciplinary thesis, we shall establish
 some context assuming minimal prior knowledge of biology, and introduce
-some terminology. Note that, due to the nature of the field, qualifiers
-such all "all", "always", "every", "none" or "never" are rarely absolute
-when talking about biological truths: There tends to be an exception to
-every rule, but unless those are particularly relevant to the subject of
-interest, we shall tacitly ignore them as edge cases.  That being said:
+some terminology. Because this is a mathematical thesis, no such basic
+background in mathematics will be provided in the main body of the text,
+though some background will be provided in Appendix A to cover any terms
+not necessarily familiar to biologists.
+
+Note that, due to the nature of biology, qualifiers such all "all",
+"always", "every", "none" or "never" are rarely absolute when talking
+about biological truths: There tends to be an exception to every rule,
+but unless those are particularly relevant to the subject of interest,
+we shall tacitly ignore them as edge cases. That being said:
 
 
 ###Cells
@@ -38,7 +43,7 @@ exploiting their similarity in structure and replication mechanism. This
 allows DNA to act as long-term sequence storage for both RNA and, via
 RNA, proteins.
 
-For a more in-depth look at these molecules, see Appendix A.
+For a more in-depth look at these molecules, see Appendix B.
 
 
 ##Transcription factors

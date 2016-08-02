@@ -15,8 +15,8 @@ various disease processes, and as such is therapeutically interesting in
 itself.
 
 Since ChIP-sequencing for every transcription factor is expensive and
-does not work in vivo, it is tempting to look for alternatives. For my
-thesis, I will try on such alternative approach by looking for common 
+does not work in vivo, it is tempting to look for alternatives. In this
+thesis, we will try one such alternative approach by looking for common 
 motifs in transcription factor footprints.
 
 
@@ -38,7 +38,7 @@ reveals is what DNA was bound.
 The idea, then, is as follows: apply Big Data techniques to datasets
 acquired as above, and, through clustering, produce hypotheses about
 what motifs must exist, even though the corresponding proteins remain
-unknown. For this purpose, I will implement and test both MST- and
+unknown. For this purpose, we will implement and test both MST- and
 association analysis-based clustering algorithms, and compare them to
 each other and to known solutions for some datasets.
 

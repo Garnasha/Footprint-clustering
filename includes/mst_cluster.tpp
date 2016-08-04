@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <unordered_map>
+#include <queue>
 
 namespace footprint_analysis {
 namespace mst {
@@ -43,19 +44,93 @@ build_adj_list(std::vector<Edge> const & edges) {
 
 }
 
+//Import from C++17
+template<class...> struct conjunction : std::true_type { };
+template<class B1> struct conjunction<B1> : B1 { };
+template<class B1, class... Bn>
+struct conjunction<B1, Bn...> :
+        std::conditional<B1::value != false, conjunction<Bn...>, B1>::type  {};
+//End import
+template<typename... Bn>
+constexpr bool conjunction_v = conjunction<Bn...>::value;
+
+//Fakes an std::
+template <typename Vertex>
+class DenseUIntSet {
+private:
+    using vb = std::vector<bool>;
+    vb is_members;
+public:
+    using size_type = typename vb::size_type;
+    using key_type = Vertex;
+    void reserve (size_type size){
+        return is_members.reserve(size);
+    }
+
+
+
+};
+
+template <typename T>
+using DenseSet =
+    std::conditional<
+        conjunction_v<std::is_integral<T>,std::is_unsigned<T>>,
+        DenseUIntSet<T>,
+        std::unordered_set<T>
+    >;
+
+template <typename Vertex>
+using DenseSet_t = typename DenseSet<Vertex>::type;
+
+template <typename Vertex, typename Edge>
+Cluster<Vertex>
+collect_cluster(
+        Vertex const & seed,
+        DenseSet_t<Vertex> & visited,
+        std::unordered_map<Vertex,std::vector<Edge>> const & adj_list){
+    std::queue<Vertex> to_visit{seed};
+    Cluster<Vertex> ret_store;
+    while(!to_visit.empty()){
+       Vertex v = to_visit.front();
+       to_visit.pop();
+       if(visited.count(v) != 0){
+           continue;
+       }
+       ret_store.push_back(v);
+       for(auto edge : adj_list[v]){
+           if(visited.count(edge.to) != 0) {
+               continue;
+           }
+           to_visit.push(edge.to);
+       }
+       visited.push_back(v);
+    }
+    return ret_store;
+}
+
+
 template <typename Vertex, typename Edge>
 std::vector<Cluster<Vertex>>
 collect_clusters(std::vector<Edge> const & edges) {
     static_assert(std::is_same<Vertex,decltype(Edge::to)>(),
-                  "Edge::to is not a Vertex!");
-    std::unordered_map<Vertex,std::vector<Edge>> adj_list{build_adj_list(edges)};
-    std::unordered_set<Vertex> collected;
-    for (auto v : adj_list) {
-        if (collected.count(v.left) != 0){
+                  "Edge::to is not a Vertex!"); //sanity check
+
+
+    using V = Vertex;
+    using E = Edge;
+
+    std::unordered_map<V,std::vector<E>> adj_list{build_adj_list<V,E>(edges)};
+    DenseSet_t<Vertex> visited;
+    visited.reserve(adj_list.size());
+    std::vector<Cluster<V>> ret_store;
+    for (auto node : adj_list) {
+        V & v = node.left;
+        if (visited.count(v) != 0){
             continue;
         }
-
+        ret_store.push_back(collect_cluster<V,E>(v, visited, adj_list));
     }
+    return ret_store;
 }
 
 template <typename Edge>

@@ -30,6 +30,11 @@
 namespace footprint_analysis {
 namespace mst {
 
+template <typename V, typename E>
+weighted_edge<V,E> weighted_edge<V,E>::reversed() {
+    return {to,from,weight};
+}
+
 template <typename T, typename Distfunc>
 size_t prim_update_memos (std::vector<T> const & nodes, Distfunc const & d,
                         std::vector<bool> const & connected, size_t const added,

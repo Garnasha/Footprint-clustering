@@ -26,10 +26,33 @@
 #include <vector>
 namespace footprint_analysis {
 struct Nucleotide{
-    char base;
+private:
+    using Nuc = Nucleotide;
+    class from_bits_tag {};
 
-    Nucleotide(char c);
-    operator char () const;
+    unsigned char base_bits;
+
+    constexpr Nucleotide(unsigned char const bits,from_bits_tag);
+
+    constexpr static char bits_to_letter[16] {
+        /*       C   C
+             A       A*/
+        '-','A','C','M',//
+        'T','W','Y','H',// T
+        'G','R','S','V',//   G
+        'K','D','B','N' // T G
+    };
+    static constexpr unsigned char letter_to_bits(char const);
+
+
+
+public:
+    constexpr Nucleotide(char c);
+
+    constexpr operator char () const;
+    constexpr Nucleotide  complement() const;
+
+    friend constexpr Nuc operator| (Nuc const lhs,Nuc const rhs);
 };
 
 std::string to_string(std::vector<Nucleotide> const & seq);

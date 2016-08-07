@@ -55,5 +55,10 @@ public:
     size_t size() const;
 };
 
+struct Sequence_Count {
+    Sequence seq;
+    size_t count;
+};
+
 } // namespace footprint_analysis
 #endif // SEQUENCE_H

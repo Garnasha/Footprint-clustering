@@ -37,6 +37,7 @@ struct weighted_edge {
     Weight weight;
 
     static constexpr Weight unreachable = std::numeric_limits<Weight>::max();
+    weighted_edge<Vertex,Weight> reversed();
 };
 
 using link = weighted_edge<size_t,unsigned int>;

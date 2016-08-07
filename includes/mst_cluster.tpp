@@ -28,21 +28,10 @@
 #include <type_traits>
 #include <unordered_map>
 #include <queue>
+#include <cstddef>
 
 namespace footprint_analysis {
 namespace mst {
-
-template <typename T, typename Ord>
-void remove_greatest_n(std::vector<T> & v, size_t n, Ord ordering) {
-    std::sort(v.begin(),v.end(),ordering);
-    v.resize(v.size()-n);
-} //done
-
-template <typename Vertex, typename Edge>
-std::unordered_map<Vertex,std::vector<Edge>>
-build_adj_list(std::vector<Edge> const & edges) {
-
-}
 
 //Import from C++17
 template<class...> struct conjunction : std::true_type { };
@@ -54,21 +43,43 @@ struct conjunction<B1, Bn...> :
 template<typename... Bn>
 constexpr bool conjunction_v = conjunction<Bn...>::value;
 
-//Fakes an std::
-template <typename Vertex>
+/// \brief Fakes an std::unordered_set<UInt_T>, backed by std::vector<bool>
+/// Warning: bare bones, does not support e.g. iteration (iterator is nullptr_t)
+template <typename UInt_T>
 class DenseUIntSet {
 private:
     using vb = std::vector<bool>;
     vb is_members;
 public:
     using size_type = typename vb::size_type;
-    using key_type = Vertex;
+    using key_type = UInt_T;
+    using value_type = key_type;
+    using iterator = std::nullptr_t;
+    using const_iterator = const iterator;
     void reserve (size_type size){
         return is_members.reserve(size);
     }
+    size_type count(key_type const k) const {
+        if (is_members.size() <= k){
+            return 0;
+        }
+        else {
+            return is_members[k]?1:0;
+        }
+    }
 
-
-
+    std::pair<iterator,bool> insert( const value_type value ) {
+        if (is_members.size() <= value){
+            is_members.resize(value+1);
+        }
+        if (is_members[value]){
+            return {nullptr,false};
+        }
+        else {
+            is_members[value]=true;
+            return {nullptr,true};
+        }
+    }
 };
 
 template <typename T>
@@ -81,15 +92,34 @@ using DenseSet =
 
 template <typename Vertex>
 using DenseSet_t = typename DenseSet<Vertex>::type;
+template <typename T, typename Ord>
+void remove_greatest_n(std::vector<T> & v, size_t n, Ord ordering) {
+    std::sort(v.begin(),v.end(),ordering);
+    v.resize(v.size()-n);
+} //done
+
+template <typename Vertex, typename Edge>
+std::unordered_map<Vertex,std::vector<Edge>>
+build_adj_list(std::vector<Edge> const & edges) {
+    std::unordered_map<Vertex,std::vector<Edge>> adj_list;
+    for (auto e : edges) {
+        adj_list[e.to].push_back(e);
+        adj_list[e.from].push_back(e.reversed());
+    }
+    return adj_list;
+}
+
 
 template <typename Vertex, typename Edge>
 Cluster<Vertex>
 collect_cluster(
         Vertex const & seed,
         DenseSet_t<Vertex> & visited,
-        std::unordered_map<Vertex,std::vector<Edge>> const & adj_list){
+        std::unordered_map<Vertex,std::vector<Edge>> const & adj_list)
+{
     std::queue<Vertex> to_visit{seed};
     Cluster<Vertex> ret_store;
+
     while(!to_visit.empty()){
        Vertex v = to_visit.front();
        to_visit.pop();
@@ -114,11 +144,10 @@ std::vector<Cluster<Vertex>>
 collect_clusters(std::vector<Edge> const & edges) {
     static_assert(std::is_same<Vertex,decltype(Edge::to)>(),
                   "Edge::to is not a Vertex!"); //sanity check
-
-
     using V = Vertex;
     using E = Edge;
 
+    //TODO: replace this by a DenseMap_t, matching DenseSet_t
     std::unordered_map<V,std::vector<E>> adj_list{build_adj_list<V,E>(edges)};
     DenseSet_t<Vertex> visited;
     visited.reserve(adj_list.size());
@@ -133,13 +162,6 @@ collect_clusters(std::vector<Edge> const & edges) {
     return ret_store;
 }
 
-template <typename Edge>
-std::vector<Cluster<size_t>> collect_clusters(std::vector<Edge> const & v) {
-    static_assert(std::is_same<size_t,decltype(Edge::to)>(),
-                  "Edge::to is not a size_t!");
-
-
-}
 } // namespace mst
 } // namespace footprint_analysis
 #endif // MST_CLUSTER_TPP

@@ -17,45 +17,28 @@
 //FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 //AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//THE SOFTWARE.
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
-#ifndef SEQUENCE_H
-#define SEQUENCE_H
+#ifndef MST_CORE_H
+#define MST_CORE_H
 
-#include <vector>
-#include <string>
-#include <tuple>
 #include <cstddef>
-
 #include "nucleotide.h"
+#include "sequence.h"
+#include "fullfootprint.h"
+#include "mst_cluster.h"
+#include "minspantree.h"
+
 namespace footprint_analysis {
 
-/// Nucleotide sequence class. (UNIMPLEMENTED)
-
-/// Alternative for std::vector<Nucleotide>. Provides utilities like complement
-/// and similarity scoring.
-/// \todo This needs to be implemented as described above.
-class Sequence
-{
-private:
-    typedef std::pair<size_t,size_t> Location;
-
-    std::vector<Nucleotide> seq;
-    //TODO: Implement features promised in documentation
-public:
-    Sequence();
-    Sequence(std::vector<Nucleotide> seq);
-    Sequence(std::vector<Nucleotide> const & chrseq, Location loc);
-    Sequence(std::vector<Nucleotide> const & chrseq, size_t begin, size_t end);
-
-    std::vector<Nucleotide> const & getseq() const;
-    operator std::vector<Nucleotide> () const;
-
-    size_t size() const;
+struct Seq_Count {
+    Sequence seq;
+    size_t count;
 };
 
+std::vector<Seq_Count> count_sequences(std::vector<FullFootprint> raws);
 
-
+int hamming_d(Nucleotide lhs,Nucleotide rhs);
 } // namespace footprint_analysis
-#endif // SEQUENCE_H
+#endif // SEQ_COUNT_H

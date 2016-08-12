@@ -20,10 +20,36 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#ifndef MST_CLUSTER_TPP
-#define MST_CLUSTER_TPP
-#include "mst_core.h"
+#ifndef METRICS_TPP
+#define METRICS_TPP
 
+#include "metrics.h"
 
+namespace footprint_analysis {
 
-#endif // MST_CLUSTER_TPP
+template <typename Metric>
+typename Metric::ret_type
+distance(Nucleotide const lhs, Nucleotide const rhs);
+//no default definition.
+
+template <typename Metric>
+typename Metric::ret_type
+distance(Sequence const & lhs, Sequence const & rhs) {
+    typename Metric::ret_type dist{0};
+    if (lhs.size() != rhs.size()) {
+        return {100};
+    }
+    auto syn_iter = rhs.begin();
+    for (auto l : lhs) {
+        dist += distance<Metric>(l,*(syn_iter++));
+    }
+    return dist;
+}
+
+template <typename Metric>
+typename Metric::ret_type
+distance(FullFootprint const & lhs, FullFootprint const & rhs) {
+    return distance<Metric>(lhs.seq,rhs.seq);
+}
+} // namespace footprint_analysis
+#endif // METRICS_TPP

@@ -20,17 +20,33 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include <vector>
-#include <unordered_set>
-#include "minspantree.h"
-#ifndef MST_CLUSTER_H
-#define MST_CLUSTER_H
+#ifndef METRICS_H
+#define METRICS_H
+
+#include "nucleotide.h"
+#include "sequence.h"
+#include "fullfootprint.h"
+
 namespace footprint_analysis {
-namespace mst {
-template <typename T>
-using Cluster = std::vector<T>;
+namespace metrics{
+struct hamming {using ret_type = unsigned int;};
+} // namespace metrics
 
+template <typename Tag>
+typename Tag::ret_type
+distance(Nucleotide const lhs, Nucleotide const rhs);
 
-} // namespace mst
+template <typename Tag>
+typename Tag::ret_type
+distance(Sequence const & lhs, Sequence const & rhs);
+
+template <typename Tag>
+typename Tag::ret_type
+distance(FullFootprint const & lhs, FullFootprint const & rhs);
+
+//int hamming_d(Nucleotide const lhs,Nucleotide const rhs);
+//int hamming_d(Sequence const & lhs,Sequence const & rhs);
+//int hamming_d(FullFootprint const & lhs,FullFootprint const & rhs);
+
 } // namespace footprint_analysis
-#endif // MST_CLUSTER_H
+#endif // METRICS_H

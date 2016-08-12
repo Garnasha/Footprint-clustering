@@ -27,6 +27,7 @@
 #include <string>
 #include <tuple>
 #include <cstddef>
+#include <iterator>
 
 #include "nucleotide.h"
 namespace footprint_analysis {
@@ -39,11 +40,15 @@ namespace footprint_analysis {
 class Sequence
 {
 private:
-    typedef std::pair<size_t,size_t> Location;
+    using Location = std::pair<size_t,size_t>;
 
-    std::vector<Nucleotide> seq;
+    using vNuc = std::vector<Nucleotide>;
+    vNuc seq;
     //TODO: Implement features promised in documentation
 public:
+    using iterator = typename vNuc::iterator;
+    using const_iterator = typename vNuc::const_iterator;
+
     Sequence();
     Sequence(std::vector<Nucleotide> seq);
     Sequence(std::vector<Nucleotide> const & chrseq, Location loc);
@@ -52,10 +57,29 @@ public:
     std::vector<Nucleotide> const & getseq() const;
     operator std::vector<Nucleotide> () const;
 
+    Nucleotide const & operator[](size_t const i) const;
+    Nucleotide & operator[](size_t const i);
+
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
+
+    Sequence & absorb_join(Sequence const & other);
+
     size_t size() const;
 };
 
+template <typename Obj,typename It>
+Obj fold_join(It begin,It end);
 
-
+bool operator==(Sequence const &,Sequence const &);
+bool operator<(Sequence const &,Sequence const &);
+bool operator<=(Sequence const &,Sequence const &);
+bool operator>(Sequence const &,Sequence const &);
+bool operator>=(Sequence const &,Sequence const &);
 } // namespace footprint_analysis
 #endif // SEQUENCE_H

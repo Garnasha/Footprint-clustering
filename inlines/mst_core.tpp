@@ -20,17 +20,13 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include <vector>
-#include <unordered_set>
-#include "minspantree.h"
-#ifndef MST_CLUSTER_H
-#define MST_CLUSTER_H
-namespace footprint_analysis {
-namespace mst {
-template <typename T>
-using Cluster = std::vector<T>;
+#ifndef MST_CORE_TPP
+#define MST_CORE_TPP
+#include "mst_core.h"
+#include "mst_cluster.tpp"
+#include "minspantree.tpp"
+#include "sequence.tpp"
 
 
-} // namespace mst
-} // namespace footprint_analysis
-#endif // MST_CLUSTER_H
+
+#endif // MST_CORE_TPP

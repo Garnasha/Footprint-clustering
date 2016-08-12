@@ -52,6 +52,10 @@ constexpr Nucleotide::Nucleotide(unsigned char const bits,from_bits_tag):
     base_bits(bits)
 {}
 
+constexpr Nucleotide::Nucleotide():
+    base_bits(0)
+{}
+
 constexpr Nucleotide::Nucleotide(char const c):
     base_bits(letter_to_bits(c))
 {}
@@ -72,11 +76,37 @@ constexpr Nucleotide Nucleotide::complement() const
 constexpr Nucleotide operator|(Nucleotide const lhs, Nucleotide const rhs) {
     return Nucleotide{
         static_cast<unsigned char>(lhs.base_bits | rhs.base_bits),
-        Nucleotide::from_bits_tag{}
-    };
+        Nucleotide::from_bits_tag{} };
 }
 
+Nucleotide & Nucleotide::operator|=(Nucleotide const & other){
+    base_bits |= other.base_bits;
+    return *this;
+}
 
+constexpr bool operator==(Nucleotide const lhs, Nucleotide const rhs) {
+    return lhs.base_bits == rhs.base_bits;
+}
+
+constexpr bool operator!=(Nucleotide const lhs, Nucleotide const rhs) {
+    return lhs.base_bits != rhs.base_bits;
+}
+
+constexpr bool operator<(Nucleotide const lhs,Nucleotide const rhs) {
+    return lhs.base_bits < rhs.base_bits;
+}
+
+constexpr bool operator<=(Nucleotide const lhs,Nucleotide const rhs) {
+    return lhs.base_bits <= rhs.base_bits;
+}
+
+constexpr bool operator>(Nucleotide const lhs,Nucleotide const rhs) {
+    return lhs.base_bits > rhs.base_bits;
+}
+
+constexpr bool operator>=(Nucleotide const lhs,Nucleotide const rhs) {
+    return lhs.base_bits >= rhs.base_bits;
+}
 
 /// Overload of std::to_string for argument std::vector<Nucleotide>
 std::string to_string(std::vector<Nucleotide> const & seq){

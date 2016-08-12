@@ -47,12 +47,22 @@ private:
 
 
 public:
+    constexpr Nucleotide();
     constexpr Nucleotide(char c);
 
     constexpr operator char () const;
     constexpr Nucleotide  complement() const;
 
     friend constexpr Nuc operator| (Nuc const lhs,Nuc const rhs);
+    Nuc & operator|=(Nuc const & other);
+
+    friend constexpr bool operator==(Nuc const lhs, Nuc const rhs);
+    friend constexpr bool operator!=(Nuc const lhs, Nuc const rhs);
+    friend constexpr bool operator<(Nuc const lhs,Nuc const rhs);
+    friend constexpr bool operator<=(Nuc const lhs,Nuc const rhs);
+    friend constexpr bool operator>(Nuc const lhs,Nuc const rhs);
+    friend constexpr bool operator>=(Nuc const lhs,Nuc const rhs);
+
 };
 
 std::string to_string(std::vector<Nucleotide> const & seq);

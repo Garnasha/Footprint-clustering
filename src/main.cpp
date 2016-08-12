@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <tuple>
 #include <cassert>
+#include "mst_core.h"
 
 using namespace footprint_analysis;
 
@@ -17,6 +18,10 @@ struct ffp_comp{
 int main(void){
     auto fps = load_full_footprints(datapath+monocytes);
     std::cout << fps.size() << std::endl;
+    auto motifs = find_mst_motifs(std::move(fps));
+    std::cout << motifs.size() << std::endl;
+    for (auto m : motifs) std::cout << to_string(m.seq.getseq()) << " " << m.count << std::endl;
+    /*
     for (auto fp : fps) std::cout << std::string(fp) << std::endl;
     std::cout << " That's all, now to sort them" << std::endl;
     std::sort(fps.begin(),fps.end(),ffp_comp{});
@@ -25,6 +30,7 @@ int main(void){
     //for (size_t j = 0; j < 1000; ++j){
      //   std::cout << std::string(fps[j]) << " size " << fps[j].seq.size() << std::endl;
     //}
+    */
 #if 0
     while(true){
         std::cout << "Enter an index to print" << std::endl;

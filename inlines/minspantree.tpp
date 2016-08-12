@@ -52,6 +52,7 @@ size_t prim_update_memos (std::vector<T> const & nodes, Distfunc const & d,
             candidate = i;
         }
     }
+    return candidate;
 }
 
 template <typename T, typename Distfunc>

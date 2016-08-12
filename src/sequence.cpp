@@ -21,6 +21,8 @@
 //THE SOFTWARE.
 
 #include "sequence.h"
+#include "sequence.tpp"
+#include <iostream>
 
 namespace footprint_analysis{
 
@@ -57,7 +59,68 @@ Sequence::operator std::vector<Nucleotide> () const {
     return seq;
 }
 
-size_t Sequence::size() const {
-    return seq.size();
+Nucleotide const & Sequence::operator[](size_t const i) const{
+    return seq[i];
 }
+
+Nucleotide & Sequence::operator[](size_t const i) {
+    return seq[i];
+}
+
+Sequence::iterator Sequence::begin(){
+    return seq.begin();
+}
+Sequence::const_iterator Sequence::begin() const{
+    return seq.begin();
+}
+Sequence::const_iterator Sequence::cbegin() const{
+    return seq.cbegin();
+}
+
+Sequence::iterator Sequence::end(){
+    return seq.end();
+}
+Sequence::const_iterator Sequence::end() const{
+    return seq.end();
+}
+Sequence::const_iterator Sequence::cend() const{
+    return seq.cend();
+}
+
+Sequence & Sequence::absorb_join(Sequence const & other){
+    if(other.size() != size()) { //sanity: should not happen.
+        std::cerr << "WARNING: Sequence join size mismatch." << std::endl;
+        seq.resize(other.size()); //let's at least not segfault.
+    }
+    for(size_t i = 0; i < other.size(); ++i) {
+        seq[i] |= other[i];
+    }
+    return *this;
+}
+
+size_t Sequence::size() const {
+return seq.size();
+}
+
+/*
+using vSIt = std::vector<Sequence>::iterator;
+template<> Sequence fold_join<vSIt>(vSIt,vSIt);
+*/
+
+bool operator==(Sequence const & lhs,Sequence const & rhs){
+    return lhs.getseq() == rhs.getseq();
+}
+bool operator<(Sequence const & lhs,Sequence const & rhs) {
+    return lhs.getseq() < rhs.getseq();
+}
+bool operator<=(Sequence const & lhs,Sequence const & rhs){
+    return lhs.getseq() <= rhs.getseq();
+}
+bool operator>(Sequence const & lhs,Sequence const & rhs){
+    return lhs.getseq() > rhs.getseq();
+}
+bool operator>=(Sequence const & lhs,Sequence const & rhs){
+    return lhs.getseq() >= rhs.getseq();
+}
+
 } // namespace footprint_analysis

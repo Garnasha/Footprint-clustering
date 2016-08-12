@@ -20,4 +20,25 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "minspantree.tpp"
+#include "metrics.tpp"
+
+namespace footprint_analysis {
+
+template<>
+typename metrics::hamming::ret_type
+distance<metrics::hamming>(Nucleotide const lhs,Nucleotide const rhs) {
+    return lhs==rhs?0:1;
+}
+
+template
+typename metrics::hamming::ret_type
+distance<metrics::hamming>(Nucleotide const,Nucleotide const);
+
+template
+typename metrics::hamming::ret_type
+distance<metrics::hamming>(Sequence const &,Sequence const &);
+
+template
+typename metrics::hamming::ret_type
+distance<metrics::hamming>(FullFootprint const &,FullFootprint const &);
+} // namespace footprint_analysis

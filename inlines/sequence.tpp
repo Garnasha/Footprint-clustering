@@ -20,17 +20,36 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include <vector>
-#include <unordered_set>
-#include "minspantree.h"
-#ifndef MST_CLUSTER_H
-#define MST_CLUSTER_H
+#include "sequence.h"
+#include <iterator>
+#include <type_traits>
+
+#ifndef SEQUENCE_TPP
+#define SEQUENCE_TPP
+
 namespace footprint_analysis {
-namespace mst {
-template <typename T>
-using Cluster = std::vector<T>;
+template <typename Obj,typename It>
+Obj fold_join(It begin, It end){
+    static_assert(std::is_base_of<std::input_iterator_tag,
+                  typename std::iterator_traits<It>::iterator_category
+                  >::value, "Iterator not an input iterator!\n");
+    static_assert(std::is_same<Obj,
+                    typename std::iterator_traits<It>::value_type>::value,
+                  "Iterator does not match Obj type!\n");
+    if (end == begin) {
+        return Obj{};
+    }
+//  if (end<begin) { //only guaranteed to be valid for RandomAccessIterator
+//      return Sequence{};
+//  }
+    // TODO: normal case: prep and loop.
+    Obj joined = *begin;
+    ++begin;
+    for(;begin != end;++begin) {
+        joined.absorb_join(*begin);
+    }
+    return joined;
+}
 
-
-} // namespace mst
 } // namespace footprint_analysis
-#endif // MST_CLUSTER_H
+#endif // SEQUENCE_TPP

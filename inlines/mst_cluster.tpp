@@ -24,6 +24,7 @@
 #define MST_CLUSTER_TPP
 
 #include "mst_cluster.h"
+#include "minspantree.tpp"
 #include <algorithm>
 #include <type_traits>
 #include <unordered_map>
@@ -92,6 +93,7 @@ using DenseSet =
 
 template <typename Vertex>
 using DenseSet_t = typename DenseSet<Vertex>::type;
+
 template <typename T, typename Ord>
 void remove_greatest_n(std::vector<T> & v, size_t n, Ord ordering) {
     std::sort(v.begin(),v.end(),ordering);
@@ -117,7 +119,8 @@ collect_cluster(
         DenseSet_t<Vertex> & visited,
         std::unordered_map<Vertex,std::vector<Edge>> const & adj_list)
 {
-    std::queue<Vertex> to_visit{seed};
+    std::queue<Vertex> to_visit;
+    to_visit.push(seed);
     Cluster<Vertex> ret_store;
 
     while(!to_visit.empty()){
@@ -127,13 +130,13 @@ collect_cluster(
            continue;
        }
        ret_store.push_back(v);
-       for(auto edge : adj_list[v]){
+       for(auto edge : adj_list.at(v)){
            if(visited.count(edge.to) != 0) {
                continue;
            }
            to_visit.push(edge.to);
        }
-       visited.push_back(v);
+       visited.insert(v);
     }
     return ret_store;
 }
@@ -153,7 +156,7 @@ collect_clusters(std::vector<Edge> const & edges) {
     visited.reserve(adj_list.size());
     std::vector<Cluster<V>> ret_store;
     for (auto node : adj_list) {
-        V & v = node.left;
+        V const & v = node.first;
         if (visited.count(v) != 0){
             continue;
         }

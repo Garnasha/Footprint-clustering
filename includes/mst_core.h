@@ -29,16 +29,26 @@
 #include "fullfootprint.h"
 #include "mst_cluster.h"
 #include "minspantree.h"
+#include "metrics.h"
 
 namespace footprint_analysis {
 
 struct Seq_Count {
     Sequence seq;
     size_t count;
+
+    Seq_Count();
+    Seq_Count(Sequence,size_t);
+    Seq_Count & absorb_join(Seq_Count const & other);
 };
 
-std::vector<Seq_Count> count_sequences(std::vector<FullFootprint> raws);
+std::vector<Seq_Count> count_sequences(std::vector<FullFootprint> && raws);
 
-int hamming_d(Nucleotide lhs,Nucleotide rhs);
+template<typename Metric>
+typename Metric::ret_type
+distance(Seq_Count const & lhs,Seq_Count const & rhs);
+
+std::vector<Seq_Count> find_mst_motifs(std::vector<FullFootprint> && raws);
+
 } // namespace footprint_analysis
 #endif // SEQ_COUNT_H

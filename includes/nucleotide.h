@@ -32,7 +32,7 @@ private:
 
     unsigned char base_bits;
 
-    constexpr Nucleotide(unsigned char const bits,from_bits_tag);
+    Nucleotide(unsigned char const bits,from_bits_tag);
 
     constexpr static char bits_to_letter[16] {
         /*       C   C
@@ -42,26 +42,26 @@ private:
         'G','R','S','V',//   G
         'K','D','B','N' // T G
     };
-    static constexpr unsigned char letter_to_bits(char const);
+    static unsigned char letter_to_bits(char const);
 
 
 
 public:
-    constexpr Nucleotide();
-    constexpr Nucleotide(char c);
+    Nucleotide();
+    Nucleotide(char c);
 
-    constexpr operator char () const;
-    constexpr Nucleotide  complement() const;
+    operator char () const;
+    Nucleotide  complement() const;
 
-    friend constexpr Nuc operator| (Nuc const lhs,Nuc const rhs);
+    friend Nuc operator| (Nuc const lhs,Nuc const rhs);
     Nuc & operator|=(Nuc const & other);
 
-    friend constexpr bool operator==(Nuc const lhs, Nuc const rhs);
-    friend constexpr bool operator!=(Nuc const lhs, Nuc const rhs);
-    friend constexpr bool operator<(Nuc const lhs,Nuc const rhs);
-    friend constexpr bool operator<=(Nuc const lhs,Nuc const rhs);
-    friend constexpr bool operator>(Nuc const lhs,Nuc const rhs);
-    friend constexpr bool operator>=(Nuc const lhs,Nuc const rhs);
+    friend bool operator==(Nuc const lhs, Nuc const rhs);
+    friend bool operator!=(Nuc const lhs, Nuc const rhs);
+    friend bool operator<(Nuc const lhs,Nuc const rhs);
+    friend bool operator<=(Nuc const lhs,Nuc const rhs);
+    friend bool operator>(Nuc const lhs,Nuc const rhs);
+    friend bool operator>=(Nuc const lhs,Nuc const rhs);
 
 };
 

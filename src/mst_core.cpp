@@ -24,6 +24,7 @@
 #include "mst_core.tpp"
 #include <algorithm>
 #include <utility>
+#include <iostream>
 
 namespace footprint_analysis {
 
@@ -72,15 +73,21 @@ distance<metrics::hamming>(Seq_Count const &,Seq_Count const &);
 
 std::vector<Seq_Count> find_mst_motifs(std::vector<FullFootprint> && raws) {
     auto seq_counts{count_sequences(std::move(raws))};
+    std::cout << "INFO: seq_count count: " << seq_counts.size() << std::endl;
     auto distfunc = [](Seq_Count const & lhs,Seq_Count const & rhs) {
         return distance<metrics::hamming>(lhs,rhs);
     };
+    std::cout << "INFO: defined distfunc." << std::endl;
     auto tree = mst::prim_gen_mst(seq_counts,distfunc);
+    std::cout << "INFO: Links in tree (should be seq_count count - 1): " << tree.size() << std::endl;
     auto order_by_weight = [](mst::link const & lhs,mst::link const & rhs) {
         return lhs.weight < rhs.weight;
     };
+    std::cout << "INFO: defined order_by_weight." << std::endl;
     mst::remove_greatest_n(tree,600,order_by_weight);
+    std::cout << "INFO: removed greatest 600" << std::endl;
     auto clusters = mst::collect_clusters<size_t,mst::link>(tree);
+    std::cout << "INFO: collected clusters, amount (should be 601): " << clusters.size() << std::endl;
     std::vector<Seq_Count> motifs;
     for (auto cluster_indices : clusters) {
         std::vector<Seq_Count> cluster;
@@ -90,4 +97,5 @@ std::vector<Seq_Count> find_mst_motifs(std::vector<FullFootprint> && raws) {
     }
     return motifs;
 }
+
 } // namespace footprint_analysis

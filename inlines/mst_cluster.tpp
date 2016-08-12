@@ -122,6 +122,7 @@ collect_cluster(
     std::queue<Vertex> to_visit;
     to_visit.push(seed);
     Cluster<Vertex> ret_store;
+    assert(visited.count(seed) == 0);
 
     while(!to_visit.empty()){
        Vertex v = to_visit.front();
@@ -131,6 +132,7 @@ collect_cluster(
        }
        ret_store.push_back(v);
        for(auto edge : adj_list.at(v)){
+           assert(edge.from == v);
            if(visited.count(edge.to) != 0) {
                continue;
            }

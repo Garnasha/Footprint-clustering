@@ -26,7 +26,7 @@
 namespace footprint_analysis {
 constexpr char Nucleotide::bits_to_letter[];
 
-constexpr unsigned char  Nucleotide::letter_to_bits(char const c) {
+unsigned char  Nucleotide::letter_to_bits(char const c) {
     switch (c){
         case 'a':
         case 'A':
@@ -48,24 +48,24 @@ constexpr unsigned char  Nucleotide::letter_to_bits(char const c) {
     }
 }
 
-constexpr Nucleotide::Nucleotide(unsigned char const bits,from_bits_tag):
+Nucleotide::Nucleotide(unsigned char const bits,from_bits_tag):
     base_bits(bits)
 {}
 
-constexpr Nucleotide::Nucleotide():
+Nucleotide::Nucleotide():
     base_bits(0)
 {}
 
-constexpr Nucleotide::Nucleotide(char const c):
+Nucleotide::Nucleotide(char const c):
     base_bits(letter_to_bits(c))
 {}
 
 
-constexpr Nucleotide::operator char () const {
+Nucleotide::operator char () const {
     return bits_to_letter[base_bits];
 }
 
-constexpr Nucleotide Nucleotide::complement() const
+Nucleotide Nucleotide::complement() const
 {
    return Nucleotide{
        static_cast<unsigned char>((base_bits&0x03) << 2 | (base_bits&0x0c) >> 2),
@@ -73,7 +73,7 @@ constexpr Nucleotide Nucleotide::complement() const
    };
 }
 
-constexpr Nucleotide operator|(Nucleotide const lhs, Nucleotide const rhs) {
+Nucleotide operator|(Nucleotide const lhs, Nucleotide const rhs) {
     return Nucleotide{
         static_cast<unsigned char>(lhs.base_bits | rhs.base_bits),
         Nucleotide::from_bits_tag{} };
@@ -84,27 +84,27 @@ Nucleotide & Nucleotide::operator|=(Nucleotide const & other){
     return *this;
 }
 
-constexpr bool operator==(Nucleotide const lhs, Nucleotide const rhs) {
+bool operator==(Nucleotide const lhs, Nucleotide const rhs) {
     return lhs.base_bits == rhs.base_bits;
 }
 
-constexpr bool operator!=(Nucleotide const lhs, Nucleotide const rhs) {
+bool operator!=(Nucleotide const lhs, Nucleotide const rhs) {
     return lhs.base_bits != rhs.base_bits;
 }
 
-constexpr bool operator<(Nucleotide const lhs,Nucleotide const rhs) {
+bool operator<(Nucleotide const lhs,Nucleotide const rhs) {
     return lhs.base_bits < rhs.base_bits;
 }
 
-constexpr bool operator<=(Nucleotide const lhs,Nucleotide const rhs) {
+bool operator<=(Nucleotide const lhs,Nucleotide const rhs) {
     return lhs.base_bits <= rhs.base_bits;
 }
 
-constexpr bool operator>(Nucleotide const lhs,Nucleotide const rhs) {
+bool operator>(Nucleotide const lhs,Nucleotide const rhs) {
     return lhs.base_bits > rhs.base_bits;
 }
 
-constexpr bool operator>=(Nucleotide const lhs,Nucleotide const rhs) {
+bool operator>=(Nucleotide const lhs,Nucleotide const rhs) {
     return lhs.base_bits >= rhs.base_bits;
 }
 

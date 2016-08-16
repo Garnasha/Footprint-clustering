@@ -35,3 +35,5 @@ includes/metrics.h
 src/metrics.cpp
 inlines/sequence.tpp
 inlines/metrics.tpp
+includes/tests.h
+src/tests.cpp

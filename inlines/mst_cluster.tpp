@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <queue>
 #include <cstddef>
+#include <cassert>
 
 namespace footprint_analysis {
 namespace mst {

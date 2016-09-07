@@ -5,7 +5,7 @@ INCLUDE_F := -I$(INCLUDE_DIR) -I$(INLINE_DIR)
 
 OPTIMIZE_F := -O2
 WARN_F := -Weverything -Wno-c++98-compat -Wno-global-constructors -Wno-shadow \
-		 -Wno-exit-time-destructors
+	-Wno-exit-time-destructors -Wno-padded -Wno-c++98-compat-pedantic
 STANDARD_F := -std=c++14
 MODE_F := -g $(OPTIMIZE_F)
 

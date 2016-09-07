@@ -30,5 +30,5 @@
 using Adj_List = std::vector<size_t>;
 
 size_t tree_size(std::vector<footprint_analysis::mst::link> const & links,
-               size_t start = 0);
+               size_t start);
 #endif // TESTS_H

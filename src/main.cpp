@@ -5,6 +5,7 @@
 #include <cassert>
 #include "mst_core.h"
 #include "tests.h"
+#include "minspantree.tpp"
 
 using namespace footprint_analysis;
 

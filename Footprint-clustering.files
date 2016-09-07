@@ -37,3 +37,4 @@ inlines/sequence.tpp
 inlines/metrics.tpp
 includes/tests.h
 src/tests.cpp
+src/mst_cluster.cpp

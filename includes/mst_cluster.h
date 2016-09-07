@@ -30,6 +30,19 @@ namespace mst {
 template <typename T>
 using Cluster = std::vector<T>;
 
+using Safe_Cluster = std::vector<size_t>;
+
+std::vector<Safe_Cluster>
+collect_index_clusters(std::vector<link> const & edges);
+
+Safe_Cluster
+collect_index_cluster(size_t const root,
+                     std::vector<bool> & taken,
+                     std::vector<std::vector<size_t>> const & adj_list);
+
+std::vector<std::vector<size_t>>
+build_index_adj_list (std::vector<link> const & edge_list);
+
 
 } // namespace mst
 } // namespace footprint_analysis

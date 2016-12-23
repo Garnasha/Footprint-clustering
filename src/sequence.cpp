@@ -22,6 +22,7 @@
 
 #include "sequence.h"
 #include "sequence.tpp"
+#include "metrics.h"
 #include <iostream>
 
 namespace footprint_analysis{
@@ -31,6 +32,10 @@ std::vector<T> index_slice(std::vector<T> const & v,size_t begin, size_t end) {
     return std::vector<T>{
         v.begin()+static_cast<std::ptrdiff_t>(begin),
         v.begin()+static_cast<std::ptrdiff_t>(end)};
+}
+
+Sequence reprSeqFromSeq(Sequence const & seq) {
+    return std::min(seq,seq.complement());
 }
 
 Sequence::Sequence():
@@ -92,10 +97,22 @@ Sequence & Sequence::absorb_join(Sequence const & other){
         std::cerr << "WARNING: Sequence join size mismatch." << std::endl;
         seq.resize(other.size()); //let's at least not segfault.
     }
+    if(distance<metrics::hamming>(*this,other) >
+            distance<metrics::hamming>(this->complement(),other)){
+        *this = this->complement();
+    }
     for(size_t i = 0; i < other.size(); ++i) {
         seq[i] |= other[i];
     }
-    return *this;
+    return (*this=reprSeqFromSeq(*this));
+}
+
+Sequence Sequence::complement() const {
+    Sequence retstore;
+    for(auto it = seq.rbegin(); it != seq.rend();++it) {
+        retstore.seq.push_back(it->complement());
+    }
+    return retstore;
 }
 
 size_t Sequence::size() const {
@@ -121,6 +138,22 @@ bool operator>(Sequence const & lhs,Sequence const & rhs){
 }
 bool operator>=(Sequence const & lhs,Sequence const & rhs){
     return lhs.getseq() >= rhs.getseq();
+}
+
+std::vector<Sequence> joinsFromIndexClusters(
+    std::vector<std::vector<size_t>> const & clusters,
+    std::vector<Sequence> const & lookup) {
+    std::vector<Sequence> ret_store;
+    ret_store.reserve(clusters.size());
+    for (auto c : clusters) {
+        std::vector<Sequence> dereffed;
+        dereffed.reserve(c.size());
+        for(auto i : c) {
+            dereffed.push_back(lookup[i]);
+        }
+        ret_store.push_back(fold_join<Sequence>(dereffed.begin(),dereffed.end()));
+    }
+    return ret_store;
 }
 
 } // namespace footprint_analysis

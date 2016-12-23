@@ -25,20 +25,57 @@
 namespace footprint_analysis {
 
 template<>
-typename metrics::hamming::ret_type
+metrics::hamming::ret_type
 distance<metrics::hamming>(Nucleotide const lhs,Nucleotide const rhs) {
-    return lhs==rhs?0:1;
+    //is high bits of lhs a subset of those rhs or vice versa? Then 0, else 1.
+    //subset test: rhs = union(rhs,lhs) OR lhs = union (lhs,rhs)
+    return (rhs == (lhs | rhs) || lhs == (lhs | rhs))?0:1;
 }
 
+template<>
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Sequence const & lhs, Sequence const & rhs) {
+    return std::min(distance<metrics::hamming>(lhs,rhs),
+                    distance<metrics::hamming>(lhs.complement(),rhs));
+}
+
+template<>
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Nucleotide const lhs, Nucleotide const rhs) {
+    return std::min(distance<metrics::hamming>(lhs,rhs),
+                    distance<metrics::hamming>(lhs.complement(),rhs));
+}
+
+//explicit instantiations
 template
-typename metrics::hamming::ret_type
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Nucleotide const,Nucleotide const);
+
+template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Sequence const &,Sequence const &);
+
+template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Seq_Count const &,Seq_Count const &);
+
+template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(FullFootprint const &,FullFootprint const &);
+
+template
+metrics::hamming::ret_type
 distance<metrics::hamming>(Nucleotide const,Nucleotide const);
 
 template
-typename metrics::hamming::ret_type
+metrics::hamming::ret_type
 distance<metrics::hamming>(Sequence const &,Sequence const &);
 
 template
-typename metrics::hamming::ret_type
+metrics::hamming::ret_type
 distance<metrics::hamming>(FullFootprint const &,FullFootprint const &);
+
+template
+metrics::hamming::ret_type
+distance<metrics::hamming>(Seq_Count const & lhs,Seq_Count const & rhs);
 } // namespace footprint_analysis

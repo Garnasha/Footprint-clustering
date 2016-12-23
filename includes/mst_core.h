@@ -24,6 +24,7 @@
 #define MST_CORE_H
 
 #include <cstddef>
+#include <string>
 #include "nucleotide.h"
 #include "sequence.h"
 #include "fullfootprint.h"
@@ -31,18 +32,12 @@
 #include "minspantree.h"
 #include "metrics.h"
 
+
 namespace footprint_analysis {
 
-struct Seq_Count {
-    Sequence seq;
-    size_t count;
-
-    Seq_Count();
-    Seq_Count(Sequence,size_t);
-    Seq_Count & absorb_join(Seq_Count const & other);
-};
 
 std::vector<Seq_Count> count_sequences(std::vector<FullFootprint> && raws);
+
 
 template<typename Metric>
 typename Metric::ret_type
@@ -50,5 +45,8 @@ distance(Seq_Count const & lhs,Seq_Count const & rhs);
 
 std::vector<Seq_Count> find_mst_motifs(std::vector<FullFootprint> && raws);
 
+std::vector<Seq_Count> cjoinsFromIndexClusters(
+    std::vector<std::vector<size_t>> const & clusters,
+    std::vector<Seq_Count> const & lookup);
 } // namespace footprint_analysis
 #endif // SEQ_COUNT_H

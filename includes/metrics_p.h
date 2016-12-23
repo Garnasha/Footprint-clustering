@@ -20,38 +20,39 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#ifndef MINSPANTREE_H
-#define MINSPANTREE_H
+#ifndef METRICS_P_H
+#define METRICS_P_H
 
-#include <vector>
-#include <cstddef>
-#include <limits>
+#include "nucleotide.h"
+#include "sequence.h"
+#include "fullfootprint.h"
+#include "seq_count.h"
 
 namespace footprint_analysis {
-namespace mst {
+namespace metrics{
+struct hamming {using ret_type = unsigned int;};
+struct seq_hamming {using ret_type = hamming::ret_type;};
+} // namespace metrics
 
-template <typename Vertex, typename Weight>
-struct weighted_edge {
-    Vertex from;
-    Vertex to;
-    Weight weight;
+template <typename Metric>
+typename Metric::ret_type
+distance(Nucleotide const lhs, Nucleotide const rhs);
 
-    static constexpr Weight unreachable = std::numeric_limits<Weight>::max();
-    weighted_edge<Vertex,Weight> reversed();
-    bool operator< (weighted_edge<Vertex,Weight> const & other) {
-        return weight < other.weight;
-    }
-};
+template <typename Metric>
+typename Metric::ret_type
+distance(Sequence const & lhs, Sequence const & rhs);
 
-using link = weighted_edge<size_t,unsigned int>;
+template <typename Metric>
+typename Metric::ret_type
+distance(FullFootprint const & lhs, FullFootprint const & rhs);
 
-template <typename T, typename Distfunc>
-size_t prim_update_memos (std::vector<T> const & nodes, Distfunc const & d,
-                        std::vector<bool> const & connected, size_t const added,
-                        std::vector<link> & memo);
+template<typename Metric>
+typename Metric::ret_type
+distance(Seq_Count const & lhs,Seq_Count const & rhs);
 
-template <typename T, typename Distfunc>
-std::vector<link> prim_gen_mst(std::vector<T> const & nodes, Distfunc const & d);
-} // namespace mst
+//int hamming_d(Nucleotide const lhs,Nucleotide const rhs);
+//int hamming_d(Sequence const & lhs,Sequence const & rhs);
+//int hamming_d(FullFootprint const & lhs,FullFootprint const & rhs);
+
 } // namespace footprint_analysis
-#endif // MINSPANTREE_H
+#endif // METRICS_H

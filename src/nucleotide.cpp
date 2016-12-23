@@ -79,7 +79,7 @@ Nucleotide operator|(Nucleotide const lhs, Nucleotide const rhs) {
         Nucleotide::from_bits_tag{} };
 }
 
-Nucleotide & Nucleotide::operator|=(Nucleotide const & other){
+Nucleotide & Nucleotide::operator|=(Nucleotide const other){
     base_bits |= other.base_bits;
     return *this;
 }

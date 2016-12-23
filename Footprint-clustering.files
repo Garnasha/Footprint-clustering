@@ -31,10 +31,12 @@ includes/mst_cluster.h
 includes/mst_core.h
 inlines/mst_core.tpp
 src/mst_core.cpp
-includes/metrics.h
+includes/metrics_p.h
 src/metrics.cpp
 inlines/sequence.tpp
 inlines/metrics.tpp
 includes/tests.h
 src/tests.cpp
 src/mst_cluster.cpp
+includes/metrics.h
+includes/seq_count.h

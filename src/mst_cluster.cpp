@@ -23,6 +23,7 @@
 
 #include "mst_cluster.h"
 #include <stack>
+#include <iostream>
 
 namespace footprint_analysis {
 namespace mst {
@@ -64,23 +65,30 @@ collect_index_cluster(size_t const root,
 }
 
 size_t static max_index_from_edges(std::vector<link> const & edge_list) {
+    std::cout << "INFO (max_index_from_edges): Called" << std::endl;
     size_t max = 0;
     for(auto e : edge_list) {
-        max = max < e.to   ? e.to   : max;
-        max = max < e.from ? e.from : max;
+        max = std::max(e.to,max);
+        max = std::max(e.from,max);
     }
+    std::cout << "INFO (max_index_from_edges): Complete, result " <<
+                 max << std::endl;
     return max;
 }
 
 std::vector<std::vector<size_t>>
 build_index_adj_list (std::vector<link> const & edge_list) {
-    std::vector<std::vector<size_t>> adj_list(max_index_from_edges(edge_list));
+    std::cout << "INFO (build_index_adj_list): Called" << std::endl;
+    std::vector<std::vector<size_t>> adj_list(max_index_from_edges(edge_list)+1);
     for(auto e : edge_list) {
         adj_list[e.to].push_back(e.from);
         adj_list[e.from].push_back(e.to);
     }
+    std::cout << "INFO (build_index_adj_list): Complete, result size " <<
+                 adj_list.size() << std::endl;
     return adj_list;
 }
 
 } // namespace mst
+
 } // namespace footprint_analysis

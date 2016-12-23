@@ -22,31 +22,49 @@
 
 #ifndef METRICS_H
 #define METRICS_H
-
-#include "nucleotide.h"
-#include "sequence.h"
-#include "fullfootprint.h"
-
+#include "metrics_p.h"
 namespace footprint_analysis {
-namespace metrics{
-struct hamming {using ret_type = unsigned int;};
-} // namespace metrics
 
-template <typename Tag>
-typename Tag::ret_type
-distance(Nucleotide const lhs, Nucleotide const rhs);
+extern template
+metrics::hamming::ret_type
+distance<metrics::hamming>(Nucleotide const lhs,Nucleotide const rhs);
 
-template <typename Tag>
-typename Tag::ret_type
-distance(Sequence const & lhs, Sequence const & rhs);
+extern template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Nucleotide const lhs, Nucleotide const rhs);
 
-template <typename Tag>
-typename Tag::ret_type
-distance(FullFootprint const & lhs, FullFootprint const & rhs);
+//explicit instantiations
+extern template
+metrics::hamming::ret_type
+distance<metrics::hamming>(Nucleotide const,Nucleotide const);
 
-//int hamming_d(Nucleotide const lhs,Nucleotide const rhs);
-//int hamming_d(Sequence const & lhs,Sequence const & rhs);
-//int hamming_d(FullFootprint const & lhs,FullFootprint const & rhs);
+extern template
+metrics::hamming::ret_type
+distance<metrics::hamming>(Sequence const &,Sequence const &);
 
-} // namespace footprint_analysis
+extern template
+metrics::hamming::ret_type
+distance<metrics::hamming>(FullFootprint const &,FullFootprint const &);
+
+extern template
+metrics::hamming::ret_type
+distance<metrics::hamming>(Seq_Count const & lhs,Seq_Count const & rhs);
+
+extern template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Nucleotide const,Nucleotide const);
+
+extern template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Sequence const &,Sequence const &);
+
+extern template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(Seq_Count const &,Seq_Count const &);
+
+extern template
+metrics::seq_hamming::ret_type
+distance<metrics::seq_hamming>(FullFootprint const &,FullFootprint const &);
+
+} //namespace footprint_analysis
 #endif // METRICS_H

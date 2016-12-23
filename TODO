@@ -1,3 +1,12 @@
+2016-11-14
+ - Compileer bestaande stukken volgens TOC
+ - Vul evt. korte TODO's in.
+ - Compile naar LaTeX
+ - Stuur pdf door.
+ - Hervat schrijven code.
+
+
+##OLD (marked 2016-11-14)
 Maak een SubSeqCluster.
 -Schrijf de hash-functie op k-nucleotiden.
 -Schrijf een identiteit voor k-nucleotiden. (operator== ?)

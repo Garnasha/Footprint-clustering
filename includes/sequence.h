@@ -68,7 +68,12 @@ public:
     const_iterator end() const;
     const_iterator cend() const;
 
+    //overwrite this sequence by its join in the lattice of
+    //IUPAC ambiguous sequences.
     Sequence & absorb_join(Sequence const & other);
+
+    //return the reversed point-wise complement of our sequence.
+    Sequence complement() const;
 
     size_t size() const;
 };
@@ -76,6 +81,14 @@ public:
 template <typename Obj,typename It>
 Obj fold_join(It begin,It end);
 
+//Define complementary sequences as equivalent, and send the argument to
+//the representative of its equivalence class: the lexicographically lowest
+//member of that class.
+Sequence reprSeqFromSeq(Sequence const & seq);
+
+std::vector<Sequence> joinsFromIndexClusters(
+    std::vector<std::vector<size_t>> const & clusters,
+    std::vector<Sequence> const & lookup);
 bool operator==(Sequence const &,Sequence const &);
 bool operator<(Sequence const &,Sequence const &);
 bool operator<=(Sequence const &,Sequence const &);

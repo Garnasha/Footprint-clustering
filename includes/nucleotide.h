@@ -54,7 +54,7 @@ public:
     Nucleotide  complement() const;
 
     friend Nuc operator| (Nuc const lhs,Nuc const rhs);
-    Nuc & operator|=(Nuc const & other);
+    Nuc & operator|=(Nuc const other);
 
     friend bool operator==(Nuc const lhs, Nuc const rhs);
     friend bool operator!=(Nuc const lhs, Nuc const rhs);

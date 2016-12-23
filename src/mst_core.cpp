@@ -25,24 +25,29 @@
 #include <algorithm>
 #include <utility>
 #include <iostream>
+#include "metrics.h"
 
 namespace footprint_analysis {
 
 Seq_Count::Seq_Count():
-    seq(),count(0)
+    seq(),count(0),joincount(1)
 {}
 
 Seq_Count::Seq_Count(Sequence _seq,size_t _count):
-    seq(_seq),count(_count)
+    seq(_seq),count(_count),joincount(1)
 {}
+
 
 Seq_Count & Seq_Count::absorb_join(Seq_Count const & other) {
     seq.absorb_join(other.seq);
     count += other.count;
+    joincount += other.joincount;
     return *this;
 }
 
 std::vector<Seq_Count> count_sequences(std::vector<FullFootprint> && raws) {
+    std::for_each(raws.begin(),raws.end(), [](FullFootprint & fp){
+        fp.seq = reprSeqFromSeq(fp.seq);});
     std::sort(raws.begin(),
               raws.end(),
               [](FullFootprint const & lhs, FullFootprint const & rhs){
@@ -62,14 +67,6 @@ std::vector<Seq_Count> count_sequences(std::vector<FullFootprint> && raws) {
     return store;
 }
 
-template <typename Metric>
-typename Metric::ret_type
-distance(Seq_Count const & lhs,Seq_Count const & rhs){
-    return distance<Metric>(lhs.seq,rhs.seq);
-}
-template
-typename metrics::hamming::ret_type
-distance<metrics::hamming>(Seq_Count const &,Seq_Count const &);
 
 std::vector<Seq_Count> find_mst_motifs(std::vector<FullFootprint> && raws) {
     auto seq_counts{count_sequences(std::move(raws))};
@@ -97,5 +94,24 @@ std::vector<Seq_Count> find_mst_motifs(std::vector<FullFootprint> && raws) {
     }
     return motifs;
 }
+
+std::vector<Seq_Count> cjoinsFromIndexClusters(
+    std::vector<std::vector<size_t>> const & clusters,
+    std::vector<Seq_Count> const & lookup) {
+    std::vector<Seq_Count> ret_store;
+    ret_store.reserve(clusters.size());
+    for (auto c : clusters) {
+        std::vector<Seq_Count> dereffed;
+        dereffed.reserve(c.size());
+        for(auto i : c) {
+            dereffed.push_back(lookup[i]);
+        }
+        ret_store.push_back(fold_join<Seq_Count>(dereffed.begin(),dereffed.end()));
+    }
+    return ret_store;
+}
+
+
+
 
 } // namespace footprint_analysis

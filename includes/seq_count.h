@@ -20,38 +20,18 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#ifndef MINSPANTREE_H
-#define MINSPANTREE_H
-
-#include <vector>
-#include <cstddef>
-#include <limits>
-
+#ifndef SEQ_COUNT_H
+#define SEQ_COUNT_H
+#include "sequence.h"
 namespace footprint_analysis {
-namespace mst {
 
-template <typename Vertex, typename Weight>
-struct weighted_edge {
-    Vertex from;
-    Vertex to;
-    Weight weight;
+struct Seq_Count {
+    Sequence seq;
+    size_t count,joincount;
 
-    static constexpr Weight unreachable = std::numeric_limits<Weight>::max();
-    weighted_edge<Vertex,Weight> reversed();
-    bool operator< (weighted_edge<Vertex,Weight> const & other) {
-        return weight < other.weight;
-    }
+    Seq_Count();
+    Seq_Count(Sequence,size_t);
+    Seq_Count & absorb_join(Seq_Count const & other);
 };
-
-using link = weighted_edge<size_t,unsigned int>;
-
-template <typename T, typename Distfunc>
-size_t prim_update_memos (std::vector<T> const & nodes, Distfunc const & d,
-                        std::vector<bool> const & connected, size_t const added,
-                        std::vector<link> & memo);
-
-template <typename T, typename Distfunc>
-std::vector<link> prim_gen_mst(std::vector<T> const & nodes, Distfunc const & d);
-} // namespace mst
-} // namespace footprint_analysis
-#endif // MINSPANTREE_H
+} //namespace footprint_analysis
+#endif // SEQ_COUNT_H

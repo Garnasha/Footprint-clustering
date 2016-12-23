@@ -23,7 +23,7 @@
 #ifndef METRICS_TPP
 #define METRICS_TPP
 
-#include "metrics.h"
+#include "metrics_p.h"
 
 namespace footprint_analysis {
 
@@ -31,6 +31,10 @@ template <typename Metric>
 typename Metric::ret_type
 distance(Nucleotide const lhs, Nucleotide const rhs);
 //no default definition.
+
+template<>
+typename metrics::hamming::ret_type
+distance<metrics::hamming>(Nucleotide const,Nucleotide const);
 
 template <typename Metric>
 typename Metric::ret_type
@@ -49,6 +53,12 @@ distance(Sequence const & lhs, Sequence const & rhs) {
 template <typename Metric>
 typename Metric::ret_type
 distance(FullFootprint const & lhs, FullFootprint const & rhs) {
+    return distance<Metric>(lhs.seq,rhs.seq);
+}
+
+template <typename Metric>
+typename Metric::ret_type
+distance(Seq_Count const & lhs,Seq_Count const & rhs){
     return distance<Metric>(lhs.seq,rhs.seq);
 }
 } // namespace footprint_analysis

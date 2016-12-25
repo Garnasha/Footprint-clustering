@@ -9,7 +9,7 @@ molecules together into a single comparatively huge molecule, its
 functionality given by the exact sequence used to make it. For purposes
 of this paper, we can think of them as words over a specific alphabet
 (sequences). For proteins, this is an alphabet of 21 amino acids. For
-RNA, the alphabet is that of the nucleotides A, C, U, G. 
+RNA, the alphabet is that of the nucleotides A, C, U, G.
 
 ####Strengths, weaknesses and synthesis of Protein
 Proteins, with their varied alphabet, can be bent to a wide variety of
@@ -18,8 +18,8 @@ convenient way to implement a straightforward mechanism to replicate a
 sequence.
 
 As a result, new proteins are synthesized by translation from RNA
-strings, every 3 letters of RNA encoding 1 amino acid (4^2 = 16 < 21 <
-64 = 4^3). We will not discuss this further, but note that *to produce a
+strings, every 3 letters of RNA encoding 1 amino acid ($4^2 = 16 < 21 <
+64 = 4^3$). We will not discuss this further, but note that *to produce a
 protein, a template RNA strand is needed*.
 
 ####Strengths, weaknesses and replication of RNA
@@ -29,7 +29,7 @@ This enables a replication mechanism: only polymerize (add letters)
 while both the forming string and the nucleotide to be added are matched
 pointwise by a fully formed string, resulting in a "negative" of the
 original. By taking the negative of a negative, the original is
-replicated faithfully. 
+replicated faithfully.
 
 However, this process is not perfect, and in the long term, making
 copies of copies, transcription errors will accumulate, reducing or
@@ -56,12 +56,11 @@ general-purpose utility is replaced in DNA by a double helix, which only
 contributes stability. Also, the permanent availability of a negative
 allows some degree of error detection and correction. All this makes DNA
 more or less inert, unaffected by and unable to affect most parts of its
-environment. 
+environment.
 
 ####Transcription to RNA
 What is preserved, however, is the ability to pair-bond, even with RNA.
 This allows DNA to act as long-term sequence storage: By temporary
 opening of the double strand (breaking the internal pair-bonds), RNA can
 be **transcribed** from a reliable DNA template. This RNA can then in
-itself perform some general task, or be translated into protein. 
-
+itself perform some general task, or be translated into protein.

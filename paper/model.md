@@ -1,7 +1,7 @@
 #Model
 ##DNA sequences
-We will represent DNA sequences the usual way, noting only one side of a 
-double strand. 
+We will represent DNA sequences the usual way, noting only one side of a
+double strand.
 
 Because the interactions we are interested in involve double strands, we
 will identify each sequence with its complement (since the double strand
@@ -23,12 +23,10 @@ To do so, some notation for such a family is needed.
 One way to denote such a family is a motif: a sequence of probabilities
 of each nucleotide appearing. For mathematicians and programmers:
 
-```
-Sequence : \{A,C,T,G\}^*
-Motif : ([0,1]^4)^*
-t : \{A,C,T,G\} → [0,1], A ↦ (1,0,0,0), C ↦ (0,1,0,0), etc.
-i : Sequence → Motif, () ↦ (), cw ↦ t(c)i(w)
-```
+$$\text{Sequence} : \left \{ \nA, \nC, \nT, \nG \right \}^*$$
+$$\text{Motif} : \left( [0,1]^4 \right)^*$$
+$$t : \{ \nA, \nC, \nT, \nG \} → [0,1], \nA ↦ (1,0,0,0), \nC ↦ (0,1,0,0), \text{etc.}$$
+$$i : \text{Sequence} → \text{Motif}, () ↦ (), cw ↦ t(c) i(w)$$
 
 This is the notation preferred by biologists, but it strips some
 information (like implications "A in position 2 requires that C be in
@@ -36,8 +34,8 @@ location 5"), and implies more knowledge about the family than I expect
 can be gained from this dataset.
 
 ###Wildcard patterns
-A simpler, cruder representation can be gained by replacing the [0,1] in
-the motifs above with {0,1}, yielding values of "may appear" and "can't
+A simpler, cruder representation can be gained by replacing the $[0,1]$ in
+the motifs above with $\{0,1\}$, yielding values of "may appear" and "can't
 appear". Since this representation conveys less information, it is
 easier to construct from indirect observation, and will be the goal of
 initial efforts.

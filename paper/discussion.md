@@ -31,7 +31,7 @@ generic of clustering algorithms.
 The tails of singletons noted in the summary are very unlikely to actually
 exist as proper motifs belonging to transcription factors, especially
 considering their low occurences. They are almost certainly noise, and
-should be ignored. 
+should be ignored.
 
 However, their existence also indicates the amount of noise in the
 entire dataset, including where it might interfere with clustering
@@ -89,8 +89,8 @@ and so can't use averaging-based clustering algorithms.
 One very plausible theory is that true clusters are (mostly) convex.
 This requires a generalisation of the concept of convexity:
 
-A subset A of a metric space X is considered convex iff, for all x, y in A,
-and all z in X, d(x,z)+d(z,y)=d(x,y) implies z in A. 
+A subset $A$ of a metric space $X$ is considered convex iff,
+$∀ x, y ∈ A \, ∀ z ∈ X \, d(x,z) + d(z,y) = d(x,y) ⇒ z ∈ A$. 
 
 In other words, if two points are in a convex set, that set must also
 include all points "between" them for which the triangle inequality is

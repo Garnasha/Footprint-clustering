@@ -11,5 +11,4 @@ header-includes:
     - \usepackage{fontspec}
     - \setmonofont{DejaVu Sans Mono}
 classoption: fleqn
-documentclass: report
 ---

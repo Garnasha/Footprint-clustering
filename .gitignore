@@ -1,3 +1,13 @@
 data
 bin/
 doxydocs/
+*.pdf
+*.docx
+*.odt
+*.aux
+*.log?
+*.log
+*.tar
+*.gz
+paper/composed.tex
+planning

@@ -45,9 +45,8 @@ which won't be discussed further here.
 The data have been supplied as a single file per dataset, with on each
 line one footprint, formatted as such:
     `[chromosome ID] [start index] [end index]`
-We cross-reference this with publicly available reference genomes,
-formatted according to the fasta standard, to produce the associated
-sequence for each footprint.
+We cross-reference this with publicly available reference genomes to
+produce the associated sequence for each footprint.
 
 ##Acknowledgement 
 The dataset we have used has been produced by the stellar work of (*

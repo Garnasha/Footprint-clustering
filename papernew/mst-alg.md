@@ -1,14 +1,21 @@
-##Minimal spanning tree-based
+#Algorithm
+We will use an algorithm based on finding a minimal spanning tree,
+then strategically removing edges to get a forest with each connected
+component being a cluster. 
 
-###Justification
-One approach is to use the fact that sequences within a motif can't be
+Different algorithms have been considered, but have not been implemented
+due to time constraints. Some of these will be discussed in
+\autoref{potential-improvements}.
+
+##Justification
+In this approach, we use the fact that sequences within a motif can't be
 too different; therefore, all sequences matching a motif must fall
 within a fairly close edit distance of each other. Conversely, sequences
 with small edit distances to each other are likely to belong to the same
 motif. Since MSTs form a grouped measure of closeness, they can be used
 to search for a cluster.
 
-###Outline
+##Outline
 The algorithm is rather straightforward: Convert all footprints to
 sequences, yielding a multiset. Take the weighted complete graph on
 these sequences, with weights equal to the distance between sequences.
@@ -17,7 +24,7 @@ a forest. Each connected component is now expected to correspond to a
 motif, which can be found or approximated as the "join" of the sequences
 in the component.
 
-###Tuning factors
+##Tuning factors
 Decisions which need to be made in this algorithm are:
 
  * What metric to apply to the sequences.
@@ -25,19 +32,19 @@ Decisions which need to be made in this algorithm are:
    or based runtime on the dataset.
  * What join to use.
 
-###Strengths
+##Strengths
  * Easy to implement
  * Low computational complexity
 
-###Weaknesses
+##Weaknesses
  * Likely bad resolution
  * Cannot tell motifs apart whose matching sequences are too close
    together. Actual overlap cannot be compensated for by any amount of
    tuning.
 
-###Detailed description
-####Reading the data
-#####Data format
+##Detailed description
+###Reading the data
+####Data format
 The data consists of a list of all locations of footprints, in the
 format
 ```
@@ -46,7 +53,7 @@ format
 as well as, for each chromosome name, a file containing the sequence of
 that chromosome in FASTA-format, named `<chromosome name>.fa`
 
-#####Reading Algorithm
+####Reading Algorithm
 Since the human genome is rather large (on the order of 3GB), we don't
 want to open all files at once. Therefore, we first parse the locations
 file into a mapping from chromosomes to lists of locations on that
@@ -56,33 +63,35 @@ their sequence together with their location, before closing the file and
 moving on to the next chromosome. This yields a list of all footprints
 with both location and sequence known.
 
-We now have a $\texttt{raw\_dataset} = \{(\lookup(l), l) \mid l ∈ \texttt{locationfile} \} ⊂ \Sequences × \Locations$ where
+We now have a $\texttt{raw\_dataset} = \{(\lookup(l), l) \mid l \in \texttt{locationfile} \} \subset \Sequences \times \Locations$ where
 
 $$\Sequences = \text{Nucleotides}^*$$
-$$\Locations = \text{Strings} × ℕ × ℕ$$
+$$\Locations = \text{Strings} \times \mathbb{N} \times \mathbb{N}$$
 $$\text{Strings} = \text{AlphaNumeric}^*$$
-$$\texttt{locationfile} = \text{(the locations of all footprints)} ⊂ \Locations$$
-$$\lookup : \Locations → \Sequences, \text{location} → \text{sequence at that location in the chromosome files}$$
+$$\texttt{locationfile} = \text{(the locations of all footprints)} \subset \Locations$$
+$$\lookup : \Locations \rightarrow \Sequences, \text{location} \mapsto \text{sequence at that location in the chromosome files}$$
 
 
-####Taking the multiset
+###Taking the multiset
 This particular algorithm doesn't care about location (no useful metric
 considers it), but some possible refinements consider how often a
 particular sequence occurs (for cutoff criteria, or metric tweaking).
 Therefore, count occurences and discard locations, yielding a new
-$\text{dataset} ⊂ \Sequences × ℕ$
+$\text{dataset} \subset \Sequences \times \mathbb{N}$
 
-####Minimal Spanning Tree Construction
+###Minimal Spanning Tree Construction
 The construction of a Minimal Spanning Tree is done by Prim's Algorithm,
-a standard memoized greedy algorithm which takes a set of vertices $V$ and a
-weight function $w: V × V → W ⊂ ℝ$ on these vertices. By setting
+a standard memoized greedy algorithm which takes a set of vertices $V$
+and a weight function $w: V \times V \rightarrow W \subset \mathbb{R}$
+on these vertices. By setting
 
-$$V ⊂ \Sequences × ℕ$$
-$$w = d\text{ for some metric }d : V × V → ℝ$$
+$$V \subset \Sequences \times \mathbb{N}$$
+$$w = d\text{ for some metric }d : V \times V \rightarrow ℝ$$
 
 we can use Prim for clustering in a metric space. NB: while metrization
-is possible, V does not have any obvious concept of averages (it can,
-however, be embedded in a join-semilattice, which we will use later)
+is possible, V, not being a ring, does not have any obvious concept of
+averages. It can, however, be embedded in a join-semilattice, which we
+will use later.
 
 The idea behind Prim's algorithm is to expand the tree iteratively,
 calculating at each step which node not in the tree is closest to the
@@ -127,36 +136,40 @@ Prim (V, w, r ∈ V):
 
 Running `Prim(dataset,d,v ∈ dataset)` yields `MST = (V,E)`.
 
-#####A note on complexity and choice of algorithms
+####A note on complexity and choice of algorithms
 An alternative approach to constructing the MST would be to use
-Kruskal's algorithm, which does not construct a tree but simply keeps
-adding the shortest edges overall without forming cycles.
+Kruskal's algorithm, which does not expand a single tree but simply
+keeps adding the shortest edges overall without forming cycles, forming
+a forest which eventually merges into one tree.
 
-However, this performs slightly worse than linear in the amount of
-edges, while Prim's algorithm can be made quadratic in the amount of
+However, this performs slightly worse than linear in the number of
+edges, while Prim's algorithm can be made quadratic in the number of
 vertices. Since we're effectively operating on a complete graph, the
-amount of edges is the square of the amount of vertices, making Prim's
-algorithm strictly linear in the amount of edges.
+number of edges is the square of the number of vertices, making Prim's
+algorithm strictly linear in the number of edges.
 
 Several other algorithms exist, but we aren't aware of any that do
-better than linear in the amount of edges.
+better than linear in the number of edges.
 
-####Choosing the distance metric
-*FIXME:* For now, we have set `d = hamming o π₁` , so a simple hamming
-distance on the sequence, ignoring the count.
+###Choosing the distance metric
+In this thesis, we have set $d = hamming \circ \pi_1$, a simple hamming
+distance on the sequence, ignoring the count. This is the simplest
+reasonable metric. Due to time constraints, no more sophisticated
+metrics have been tried, although the code does support using custom
+metrics if any are available.
 
-####Culling the MST
+###Culling the MST
 The hypothesis now is that vertices which should be clustered will be
 close in the MST, and so cutting longest edges will not split any true
 clusters. Therefore, decide on some number N of edges to cut and remove
 the N longest edges from E to yield E′, resulting in a forest of N+1
 components.
 
-####Selecting the amount of edges to cut
+###Selecting the amount of edges to cut
 *FIXME:* Currently, this is a constant, based on a reasonable guess at
 the amount of clusters in the data.
 
-####Collecting the MST
+###Collecting the MST
 Now determine the connected components
 $\{V[n] = \{v ∈ V \mid ∃ \text{path from } v[n] \text{ to } v\}\}$ with $∀n ¬∃m<n, v[n] ∈ V[m]$
 
@@ -187,7 +200,7 @@ IUPAC DNA ambiguity codes, and deliver these to biologists as our best
 guess.
 
 
-####Formalism and types (WIP)
+###Formalism and types (WIP)
 We'll first note some type definitions, then note the steps taken in
 pseudocode. Lines starting with `Let` introduce some concept not easily
 or concisely expressible in pseudocode, and follow mathematical

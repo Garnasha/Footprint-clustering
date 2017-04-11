@@ -25,13 +25,13 @@ of each nucleotide appearing. For mathematicians and programmers:
 
 $$\text{Sequence} : \left \{ \nA, \nC, \nT, \nG \right \}^*$$
 $$\text{Motif} : \left( [0,1]^4 \right)^*$$
-$$t : \{ \nA, \nC, \nT, \nG \} → [0,1], \nA ↦ (1,0,0,0), \nC ↦ (0,1,0,0), \text{etc.}$$
-$$i : \text{Sequence} → \text{Motif}, () ↦ (), cw ↦ t(c) i(w)$$
+$$t : \{ \nA, \nC, \nT, \nG \} \rightarrow [0,1], \nA \mapsto (1,0,0,0), \nC \mapsto (0,1,0,0), \text{etc.}$$
+$$i : \text{Sequence} \rightarrow \text{Motif}, () \mapsto (), cw \mapsto t(c) i(w)$$
 
 This is the notation preferred by biologists, but it strips some
 information (like implications "A in position 2 requires that C be in
-location 5"), and implies more knowledge about the family than I expect
-can be gained from this dataset.
+location 5"), and implies more knowledge about the family than can
+likely be gained from this dataset.
 
 ###Wildcard patterns
 A simpler, cruder representation can be gained by replacing the $[0,1]$ in

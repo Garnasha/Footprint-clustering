@@ -7,9 +7,10 @@ tags: [transcription factors, data mining, dna footprinting]
 toc: yes
 # Header options
 geometry: margin=3cm
+monofont: DejaVu Sans Mono
+monofontoptions: Scale=0.9
 header-includes:
     - \usepackage{unicode-math}
     - \usepackage{fontspec}
-    - \setmonofont{DejaVu Sans Mono}
 classoption: fleqn
 ---

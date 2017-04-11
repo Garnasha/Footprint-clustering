@@ -13,6 +13,7 @@
     \usepackage{fontspec}
   \fi
   \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+    \setmonofont[Mapping=tex-ansi,Scale=0.9]{DejaVu Sans Mono}
 \fi
 % use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -108,20 +109,19 @@ less personal, has also been indispensable in writing this thesis.
 In this thesis, we will be looking at the mathematical formalisation of
 a biological problem concerning DNA regulation, and attempt a solution.
 As this is a multidisciplinary thesis, we will pay rather more attention
-than is customary to basic background of the subjects involved, both in
-the main text and in appendices.
+than is customary to basic background of the subjects involved.
 
 \section{Structure of this text}\label{structure-of-this-text}
 
-We will first formulate our research question in terms which are
-intuitive for biologists. Before trying to solve the problem, we will
-establish some biological background and characterize the content and
-format of our dataset. Based on this, we will construct a suitable
-model, and reformulate the research question in terms of the formalism
-of our model, accessible for data scientists. The answer to the formal
-question should translate trivially to an answer to the original,
-biological phrasing of the question. Finally, we will describe an
-attempted solution, and discuss the results.
+We will first formulate our research question from a biological
+perspecive. Before trying to solve the problem, we will establish some
+biological background and characterize the content and format of our
+dataset. Based on this, we will construct a suitable model, and
+reformulate the research question in terms of the formalism of our
+model, accessible for data scientists. The answer to the formal question
+should translate trivially to an answer to the original, biological
+phrasing of the question. Finally, we will describe an attempted
+solution, and discuss the results.
 
 \chapter{Research Problem for
 Biologists}\label{research-problem-for-biologists}
@@ -144,12 +144,13 @@ likely skip most of that).
 Molecular biologists should skip ahead to {[}Dataset{]}, the next major
 section.
 
-\section{Caveat}\label{caveat}
+\section{Caveat quantifiers}\label{caveat-quantifiers}
 
-When a mathematician says ``for all'' or ``there is no'' (``not
-exists''), they mean it, much more so than is usual in common parlance.
-Biologists, on the other hand, do not; they mean it as much as anyone
-describing the real world means it. We will follow this latter
+When in mathematics we say ``for all'' or ``there is no'' (``not
+exists''), this is meant in an absolute sense, much more so than is
+usual in common parlance. Biologists, on the other hand, do not; they
+mean it as much as anyone describing the real world means it. Since
+we'll be discussing the real world, we will follow this latter
 convention in this chapter, except where clearly purely mathematical
 statements are concerned.
 
@@ -171,20 +172,19 @@ one cell, averaged over all cells in a sample.
 \subsubsection{Nucleotides}\label{nucleotides}
 
 DNA is a bioheteropolymer composed of nucleotides. There are 4
-nucleotides used in the construction of DNA: dAMP, dCMP, dGMP and dTMP,
-generally referred to as A, C, T, G. A strand of DNA is generally
-represented by stringing the letters of the involved nucleotides
-together in order: ACATGG refers to a single strand of DNA containing
-every nucleotide once, and A and G twice.
+nucleotides used in the construction of DNA, generally referred to as A,
+C, T, and G. A strand of DNA is generally represented by stringing the
+letters of the involved nucleotides together in order: ACATGG refers to
+a single strand of DNA containing every nucleotide, and A and G twice.
 
 \subsubsection{Directionality}\label{directionality}
 
-Nucleotides are asymmetrical, having distinct ends called 5' and 3'
-(referring to the chemical numbering of those positions in the
-molecule), and polymerization matches 5' to 3' ends, giving DNA a
-persistent direction which is thought of as from 5' to 3', in which
-direction sequences are always reported. So, ACTG is a strand with A at
-the 5' end, and different from GTCA.
+Nucleotides are asymmetrical, having distinct ends called 5\('\) and
+3\('\) (referring to the chemical numbering of those positions in the
+molecule), and polymerization matches 5\('\) to 3\('\) ends, giving DNA
+a persistent direction which is thought of as from 5\('\) to 3\('\), in
+which direction sequences are always reported. So, ACTG is a strand with
+A at the 5\('\) end, and different from GTCA.
 
 \subsubsection{Complements}\label{complements}
 
@@ -209,7 +209,7 @@ forming ``double stranded'' DNA.
 Nucleotides vary in structure and size. A and G are ``purines'', similar
 in structure and size and larger than the ``pyramidines'' T and C,
 similarly similar to each other. This is relevant to note, since some of
-the processes we will want to model might e.g.~only react to a rising
+the processes we will want to model might, e.g., only react to a rising
 edge (pyramidine to purine) or falling edge in a sequence, rather than
 to any specific nucleotide.
 
@@ -237,9 +237,9 @@ post-processing) gives rise to its functionality.
 \section{Transcription factors}\label{transcription-factors}
 
 Since every cell contains all genes, but no cell needs every gene, it
-needs to be possible to toggle genes on and off. This is accomplished by
-means of \emph{Transcription Factors}, proteins which bind DNA and
-signal ``somewhere relatively near this place is a gene which
+needs to be possible to switch genes on and off. This is accomplished by
+means of proteins called \emph{Transcription Factors}, which bind DNA
+and signal ``somewhere relatively near this place is a gene which
 should/shouldn't be active''.
 
 These transcription factors attach to DNA in the right locations by
@@ -255,19 +255,20 @@ the dataset described below, is the focus of this thesis.
 
 The data we will be using have been acquired using a rather blunt
 approach: Rather than trying to track the behaviour of each individual
-species of TF, a near impossible task, the behaviour of all TFs in a
-living cell is analysed at once, using the procedure sketched below.
+species of TF, which is quantitatively infeasible, the behaviour of all
+TFs in a living cell is analysed at once, using the procedure sketched
+below.
 
 \section{Process}\label{process}
 
 First, chemically ``freeze'' a cell with formaldehyde, instantly killing
 it but preserving various aspects of its state at the moment of death,
-among them what DNA is bound by what proteins. However, preserving state
-and observing it are not the same; the best known approach to the latter
-is then using DNAseI to cut all unbound DNA into small pieces, then
-reversing the freezing process and seeing what parts remain uncut. Each
-such uncut part represents a ``footprint'' of a TF bound at the moment
-of death.
+among them what DNA is bound by which proteins. However, preserving
+state and observing it are not the same; the best known approach to the
+latter is then using the DNA-cutting protein DNAseI to cut all unbound
+DNA into small pieces, then reversing the freezing process and seeing
+what parts remain uncut. Each such uncut part represents a ``footprint''
+of a TF bound at the moment of death.
 
 \section{Limitations}\label{limitations}
 
@@ -291,20 +292,19 @@ available or likely to become available.
 In various places, treshold values are used in attempt to limit the
 effect of this noise. While the noise might surpass this treshold in
 some instances, it is hoped those instances will form clusters distinct
-from legitimate clusters, possibly recognisably so, but at worst
-yielding only false clusters, rather than fouling legitimate clusters.
-This hope is founded in some biological properties of false and true
-positives, which won't be discussed further here. (* Possibly create an
-appendix B and refer to it here *)
+from legitimate clusters (i.e.~those representing actual families of
+recognized sequences), possibly recognisably so, but at worst yielding
+only false clusters, rather than fouling legitimate clusters. This hope
+is founded in some biological properties of false and true positives,
+which won't be discussed further here.
 
 \section{Data format}\label{data-format}
 
-The data has been supplied as a single file per dataset, with on each
+The data have been supplied as a single file per dataset, with on each
 line one footprint, formatted as such:
 \texttt{{[}chromosome\ ID{]}\ {[}start\ index{]}\ {[}end\ index{]}} We
-cross-reference this with publicly available reference genomes,
-formatted according to the fasta standard, to produce the associated
-sequence for each footprint.
+cross-reference this with publicly available reference genomes to
+produce the associated sequence for each footprint.
 
 \section{Acknowledgement}\label{acknowledgement}
 
@@ -345,13 +345,13 @@ of each nucleotide appearing. For mathematicians and programmers:
 
 \[\text{Sequence} : \left \{ \nA, \nC, \nT, \nG \right \}^*\]
 \[\text{Motif} : \left( [0,1]^4 \right)^*\]
-\[t : \{ \nA, \nC, \nT, \nG \} → [0,1], \nA ↦ (1,0,0,0), \nC ↦ (0,1,0,0), \text{etc.}\]
-\[i : \text{Sequence} → \text{Motif}, () ↦ (), cw ↦ t(c) i(w)\]
+\[t : \{ \nA, \nC, \nT, \nG \} \rightarrow [0,1], \nA \mapsto (1,0,0,0), \nC \mapsto (0,1,0,0), \text{etc.}\]
+\[i : \text{Sequence} \rightarrow \text{Motif}, () \mapsto (), cw \mapsto t(c) i(w)\]
 
 This is the notation preferred by biologists, but it strips some
 information (like implications ``A in position 2 requires that C be in
-location 5''), and implies more knowledge about the family than I expect
-can be gained from this dataset.
+location 5''), and implies more knowledge about the family than can
+likely be gained from this dataset.
 
 \subsection{Wildcard patterns}\label{wildcard-patterns}
 
@@ -369,35 +369,41 @@ interesting results, but is a subject for future research.
 \chapter{Formalised Research Problem}\label{formalised-research-problem}
 
 Given the dataset and model as above, find Wildcard Patterns such that,
-with high likelyhood, each Transcription Factor active in the cells
+with high likelihood, each Transcription Factor active in the cells
 giving rise to the dataset matches every sequence within one of those
 Wildcard Patterns, and none outside it. Additionally, no spurious
 wildcard patterns must be introduced: each must correspond to at least
 one TF. So, there must be a surjective function \(f\) from TFs to
-Wildcard Patterns, and with
-
-\[\text{matches}: \text{Wildcard} → P(\text{Sequence})\]
-\[\text{recognizes}: TF → P(\text{Sequence})\]
-
-with the obvious interpretations, we want
-\(\text{matches} ∘ f = \text{recognizes}\).
+Wildcard Patterns, such that
+\(\text{matches}: \text{Wildcard} \rightarrow \mathcal{P}(\text{Sequence})\),
+\(\text{recognizes}: \text{TF} \rightarrow \mathcal{P}(\text{Sequence})\),
+with the obvious interpretations, satisfy
+\(\text{matches} \circ f = \text{recognizes}\).
 
 Note: \(f\) should exist, but doesn't have to be known (nor could it be
 found in this dataset): The set of wildcards produced should merely be
 such that it \emph{can} exist.
 
-\section{Minimal spanning tree-based}\label{minimal-spanning-tree-based}
+\chapter{Algorithm}\label{algorithm}
 
-\subsection{Justification}\label{justification}
+We will use an algorithm based on finding a minimal spanning tree, then
+strategically removing edges to get a forest with each connected
+component being a cluster.
 
-One approach is to use the fact that sequences within a motif can't be
+Different algorithms have been considered, but have not been implemented
+due to time constraints. Some of these will be discussed in
+\autoref{potential-improvements}.
+
+\section{Justification}\label{justification}
+
+In this approach, we use the fact that sequences within a motif can't be
 too different; therefore, all sequences matching a motif must fall
 within a fairly close edit distance of each other. Conversely, sequences
 with small edit distances to each other are likely to belong to the same
 motif. Since MSTs form a grouped measure of closeness, they can be used
 to search for a cluster.
 
-\subsection{Outline}\label{outline}
+\section{Outline}\label{outline}
 
 The algorithm is rather straightforward: Convert all footprints to
 sequences, yielding a multiset. Take the weighted complete graph on
@@ -407,7 +413,7 @@ forest. Each connected component is now expected to correspond to a
 motif, which can be found or approximated as the ``join'' of the
 sequences in the component.
 
-\subsection{Tuning factors}\label{tuning-factors}
+\section{Tuning factors}\label{tuning-factors}
 
 Decisions which need to be made in this algorithm are:
 
@@ -422,7 +428,7 @@ Decisions which need to be made in this algorithm are:
   What join to use.
 \end{itemize}
 
-\subsection{Strengths}\label{strengths}
+\section{Strengths}\label{strengths}
 
 \begin{itemize}
 \tightlist
@@ -432,7 +438,7 @@ Decisions which need to be made in this algorithm are:
   Low computational complexity
 \end{itemize}
 
-\subsection{Weaknesses}\label{weaknesses}
+\section{Weaknesses}\label{weaknesses}
 
 \begin{itemize}
 \tightlist
@@ -444,11 +450,11 @@ Decisions which need to be made in this algorithm are:
   tuning.
 \end{itemize}
 
-\subsection{Detailed description}\label{detailed-description}
+\section{Detailed description}\label{detailed-description}
 
-\subsubsection{Reading the data}\label{reading-the-data}
+\subsection{Reading the data}\label{reading-the-data}
 
-\paragraph{Data format}\label{data-format-1}
+\subsubsection{Data format}\label{data-format-1}
 
 The data consists of a list of all locations of footprints, in the
 format
@@ -461,7 +467,7 @@ as well as, for each chromosome name, a file containing the sequence of
 that chromosome in FASTA-format, named
 \texttt{\textless{}chromosome\ name\textgreater{}.fa}
 
-\paragraph{Reading Algorithm}\label{reading-algorithm}
+\subsubsection{Reading Algorithm}\label{reading-algorithm}
 
 Since the human genome is rather large (on the order of 3GB), we don't
 want to open all files at once. Therefore, we first parse the locations
@@ -473,35 +479,38 @@ moving on to the next chromosome. This yields a list of all footprints
 with both location and sequence known.
 
 We now have a
-\(\texttt{raw\_dataset} = \{(\lookup(l), l) \mid l ∈ \texttt{locationfile} \} ⊂ \Sequences × \Locations\)
+\(\texttt{raw\_dataset} = \{(\lookup(l), l) \mid l \in \texttt{locationfile} \} \subset \Sequences \times \Locations\)
 where
 
 \[\Sequences = \text{Nucleotides}^*\]
-\[\Locations = \text{Strings} × ℕ × ℕ\]
+\[\Locations = \text{Strings} \times \mathbb{N} \times \mathbb{N}\]
 \[\text{Strings} = \text{AlphaNumeric}^*\]
-\[\texttt{locationfile} = \text{(the locations of all footprints)} ⊂ \Locations\]
-\[\lookup : \Locations → \Sequences, \text{location} → \text{sequence at that location in the chromosome files}\]
+\[\texttt{locationfile} = \text{(the locations of all footprints)} \subset \Locations\]
+\[\lookup : \Locations \rightarrow \Sequences, \text{location} \mapsto \text{sequence at that location in the chromosome files}\]
 
-\subsubsection{Taking the multiset}\label{taking-the-multiset}
+\subsection{Taking the multiset}\label{taking-the-multiset}
 
 This particular algorithm doesn't care about location (no useful metric
 considers it), but some possible refinements consider how often a
 particular sequence occurs (for cutoff criteria, or metric tweaking).
 Therefore, count occurences and discard locations, yielding a new
-\(\text{dataset} ⊂ \Sequences × ℕ\)
+\(\text{dataset} \subset \Sequences \times \mathbb{N}\)
 
-\subsubsection{Minimal Spanning Tree
+\subsection{Minimal Spanning Tree
 Construction}\label{minimal-spanning-tree-construction}
 
 The construction of a Minimal Spanning Tree is done by Prim's Algorithm,
 a standard memoized greedy algorithm which takes a set of vertices \(V\)
-and a weight function \(w: V × V → W ⊂ ℝ\) on these vertices. By setting
+and a weight function \(w: V \times V \rightarrow W \subset \mathbb{R}\)
+on these vertices. By setting
 
-\[V ⊂ \Sequences × ℕ\] \[w = d\text{ for some metric }d : V × V → ℝ\]
+\[V \subset \Sequences \times \mathbb{N}\]
+\[w = d\text{ for some metric }d : V \times V \rightarrow ℝ\]
 
 we can use Prim for clustering in a metric space. NB: while metrization
-is possible, V does not have any obvious concept of averages (it can,
-however, be embedded in a join-semilattice, which we will use later)
+is possible, V, not being a ring, does not have any obvious concept of
+averages. It can, however, be embedded in a join-semilattice, which we
+will use later.
 
 The idea behind Prim's algorithm is to expand the tree iteratively,
 calculating at each step which node not in the tree is closest to the
@@ -548,29 +557,33 @@ Prim (V, w, r ∈ V):
 Running \texttt{Prim(dataset,d,v\ ∈\ dataset)} yields
 \texttt{MST\ =\ (V,E)}.
 
-\paragraph{A note on complexity and choice of
+\subsubsection{A note on complexity and choice of
 algorithms}\label{a-note-on-complexity-and-choice-of-algorithms}
 
 An alternative approach to constructing the MST would be to use
-Kruskal's algorithm, which does not construct a tree but simply keeps
-adding the shortest edges overall without forming cycles.
+Kruskal's algorithm, which does not expand a single tree but simply
+keeps adding the shortest edges overall without forming cycles, forming
+a forest which eventually merges into one tree.
 
-However, this performs slightly worse than linear in the amount of
-edges, while Prim's algorithm can be made quadratic in the amount of
+However, this performs slightly worse than linear in the number of
+edges, while Prim's algorithm can be made quadratic in the number of
 vertices. Since we're effectively operating on a complete graph, the
-amount of edges is the square of the amount of vertices, making Prim's
-algorithm strictly linear in the amount of edges.
+number of edges is the square of the number of vertices, making Prim's
+algorithm strictly linear in the number of edges.
 
 Several other algorithms exist, but we aren't aware of any that do
-better than linear in the amount of edges.
+better than linear in the number of edges.
 
-\subsubsection{Choosing the distance
+\subsection{Choosing the distance
 metric}\label{choosing-the-distance-metric}
 
-\emph{FIXME:} For now, we have set \texttt{d\ =\ hamming\ o\ π₁} , so a
-simple hamming distance on the sequence, ignoring the count.
+In this thesis, we have set \(d = hamming \circ \pi_1\), a simple
+hamming distance on the sequence, ignoring the count. This is the
+simplest reasonable metric. Due to time constraints, no more
+sophisticated metrics have been tried, although the code does support
+using custom metrics if any are available.
 
-\subsubsection{Culling the MST}\label{culling-the-mst}
+\subsection{Culling the MST}\label{culling-the-mst}
 
 The hypothesis now is that vertices which should be clustered will be
 close in the MST, and so cutting longest edges will not split any true
@@ -578,13 +591,13 @@ clusters. Therefore, decide on some number N of edges to cut and remove
 the N longest edges from E to yield E′, resulting in a forest of N+1
 components.
 
-\subsubsection{Selecting the amount of edges to
+\subsection{Selecting the amount of edges to
 cut}\label{selecting-the-amount-of-edges-to-cut}
 
 \emph{FIXME:} Currently, this is a constant, based on a reasonable guess
 at the amount of clusters in the data.
 
-\subsubsection{Collecting the MST}\label{collecting-the-mst}
+\subsection{Collecting the MST}\label{collecting-the-mst}
 
 Now determine the connected components
 \(\{V[n] = \{v ∈ V \mid ∃ \text{path from } v[n] \text{ to } v\}\}\)
@@ -618,7 +631,7 @@ translate the resulting may/may not appear-codes back into standard
 IUPAC DNA ambiguity codes, and deliver these to biologists as our best
 guess.
 
-\subsubsection{Formalism and types (WIP)}\label{formalism-and-types-wip}
+\subsection{Formalism and types (WIP)}\label{formalism-and-types-wip}
 
 We'll first note some type definitions, then note the steps taken in
 pseudocode. Lines starting with \texttt{Let} introduce some concept not

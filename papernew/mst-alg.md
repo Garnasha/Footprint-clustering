@@ -81,9 +81,13 @@ $\text{dataset} \subset \Sequences \times \mathbb{N}$
 
 ###Minimal Spanning Tree Construction
 The construction of a Minimal Spanning Tree is done by Prim's Algorithm,
-a standard memoized greedy algorithm which takes a set of vertices $V$
-and a weight function $w: V \times V \rightarrow W \subset \mathbb{R}$
-on these vertices. By setting
+as described in [@tarjan1983 p. 76], a standard memoized greedy
+algorithm which takes a set of vertices $V$ and a weight function $w: V
+\times V \rightarrow W \subset \mathbb{R}$ on these vertices. Note that
+we will not be using the heap-based optimization for sparse graphs
+described in [@tarjan p. 77] . 
+
+By setting
 
 $$V \subset \Sequences \times \mathbb{N}$$
 $$w = d\text{ for some metric }d : V \times V \rightarrow ℝ$$
@@ -200,39 +204,3 @@ IUPAC DNA ambiguity codes, and deliver these to biologists as our best
 guess.
 
 
-###Formalism and types (WIP)
-We'll first note some type definitions, then note the steps taken in
-pseudocode. Lines starting with `Let` introduce some concept not easily
-or concisely expressible in pseudocode, and follow mathematical
-conventions instead. Comments will be proceded by "Note:"
-
-NB: We will ignore most details of the interpretation of this
-formalism. While systems for rigorous typing of IO actions do exist (IO
-monad, uniqueness typing), this is not the subject of this thesis.
-Instead, we'll leave this to the actual implementation, and introduce
-some dummy functions to mark where files are opened and closed.
-```
-Let Numeric, AlphaNumeric, * (Kleene Star), N have their usual meanings.
-
-toNat : Numeric* → N,
-    base 10 notation of n |→ n
-
-Strings := AlphaNumeric*
-
-Let Files be the set of files.
-
-open : Strings → Files ,
-       path |→ file in the location described by path
-
-close : Files → {1}
-     , file |→ 1
-Note: This is a placeholder to denote the closing of a function.
-
-Let Nucleotides be the set of nucleotides, representable by
-{'a','c','t','g'}.
-
-Sequences := (Nucleotides U {'N'})*
-
-readFasta : Files → Sequences
-
-```

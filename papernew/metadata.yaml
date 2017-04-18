@@ -5,6 +5,7 @@ date: \today
 title: Transcription Factor Footprint Analysis
 tags: [transcription factors, data mining, dna footprinting]
 toc: yes
+link-citations: true
 # Header options
 geometry: margin=3cm
 monofont: DejaVu Sans Mono
@@ -13,4 +14,7 @@ header-includes:
     - \usepackage{unicode-math}
     - \usepackage{fontspec}
 classoption: fleqn
+
+
+# Bibliography
 ---

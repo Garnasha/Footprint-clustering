@@ -2,18 +2,24 @@
 ##Main conclusion
 Based on the summary given above, the main result is negative: No useful
 clusters can be found in the majority of the dataset by this algorithm.
-From this, we can conclude that a simple hamming metric is probably too
+From this, we can conclude that a simple Hamming metric is probably too
 coarse. The lowest non-zero distance it can create is 1, and this has
 been taken as the maximum distance to relate two otherwise unrelated
-sequences. No stricter criterium is possible, yet it is not strict
+sequences. No stricter criterion is possible, yet it is not strict
 enough to not absorb the vast majority of the data into a single cluster
 per sequence length.
 
 What this says about the dataset is that, using this metric, we can walk
 within sequences in the dataset from almost any point to almost any
-other point without ever taking steps longer than 1. Intuitively, this
-seems to indicate that if any real clusters exist, those clusters all
-touch, which gives a rather "fuzzy" view.
+other point without ever having a step distance greater than 1.
+Intuitively, this seems to indicate that if any real clusters exist,
+those clusters all touch, which gives a rather "fuzzy" view.
+
+Alternatively, the dataset might just be too noisy. However, if this is
+the case, the majority of the dataset is under the noise floor, based on
+trial and error with the minimum occurence count setting: any setting
+which eliminates the "all" cluster leaves only a few scattered peaks,
+with no or nearly no actual clustering occurring. 
 
 Note that this is a property of the dataset equipped with this metric:
 Other metrics might produce a clearer view, and indeed this is likely if
@@ -28,31 +34,31 @@ generic of clustering algorithms.
 
 ##Other considerations
 ###Singleton clusters
-The tails of singletons noted in the summary are very unlikely to actually
-exist as proper motifs belonging to transcription factors, especially
-considering their low occurences. They are almost certainly noise, and
-should be ignored.
+The tails of singletons noted in the summary are very unlikely to
+actually exist as proper motifs belonging to transcription factors,
+especially considering their low occurence numbers. They are almost
+certainly noise, and should be ignored.
 
 However, their existence also indicates the amount of noise in the
 entire dataset, including where it might interfere with clustering
 algorithms. Any succesful clustering algorithm will have to handle such
-noise correctly. A filter which can remove such noise before clustering
-might work, but ideally, clustering algorithms should be made robust
-against this type of noise.
+noise correctly. A filter capable of removing such noise before clustering
+might work, but ideally, clustering algorithms should be made inherently 
+robust against this type of noise.
 
 ###Similarity across lengths
 In designing both the distance function and the join function, it had
 been assumed that all sequences within a motif should be of the same
-length. Several sequences in the result contradict this assumption,
-including some non-trivial pairs with a length difference of 1.
+length. Several sequences in the result seem to contradict this
+assumption, including some non-trivial pairs with a length difference of 1.  
 Therefore, future algorithms should *not* make this assumption, and
 instead find some way to interpret and represent similarity between
-sequences of different length.
+sequences of different lengths.
 
 ##Potential improvements
 ###Distance functions
 The distance function used was a simple Hamming metric, which is
-relatively course. Several refinements are thinkable:
+relatively coarse. Several refinements are imaginable:
 
 ####Sequence-based refinement
 Not all distances between two nucleotides are equal: each nucleotide has
@@ -83,14 +89,14 @@ Constructing an MST doesn't really leave any choices or tuning variables,
 so it is hard to improve it except by choosing a better distance
 function. Alternative algorithms are thinkable however, so long as one
 keeps in mind that the sequence space does not have meaningful averages,
-and so can't use averaging-based clustering algorithms.
+and so it's not possible to use averaging-based clustering algorithms.
 
 ####Convexity-based
-One very plausible theory is that true clusters are (mostly) convex.
+One very plausible hypothesis is that true clusters are (mostly) convex.
 This requires a generalisation of the concept of convexity:
 
-A subset $A$ of a metric space $X$ is considered convex iff,
-$∀ x, y ∈ A \, ∀ z ∈ X \, d(x,z) + d(z,y) = d(x,y) ⇒ z ∈ A$. 
+A subset $A$ of a metric space $X$ is considered convex iff
+$\forall x, y \in A \, \forall z \in X \, d(x,z) + d(z,y) = d(x,y) \Rightarrow z \in A$. 
 
 In other words, if two points are in a convex set, that set must also
 include all points "between" them for which the triangle inequality is
@@ -99,10 +105,10 @@ with weighted averages such as real and complex numbers and vector
 spaces.
 
 Given such a notion of convexity, it might be possible and useful to
-define an algorithm which tries to split non-convex clusters, ideally
-such that as many points in the cluster but not in the dataset are
-excluded from the union of the two new clusters (intuitively, split along
-the plane of maximum missing datapoints in the cluster). Given an
+define an algorithm based on trying to split non-convex clusters,
+ideally such that as many points in the cluster but not in the dataset
+are excluded from the union of the two new clusters (intuitively, split
+along the plane of maximum missing datapoints in the cluster). Given an
 algorithm to perform such a step, apply this iteratively to the most
 non-convex cluster after each step, starting with a universal cluster.
 
@@ -110,7 +116,7 @@ No attempt has been made here to write such an algorithm beyond
 formulating the concept, but further work could include making such an
 attempt.
 
-####Co-occurence based
+####Co-occurrence based
 Another possibility is to look not only at what sequences are found, but
 also where they are found. Transcription factors form complexes, so
 often, the same motifs will always occur together, with similar relative

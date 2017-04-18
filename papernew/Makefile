@@ -1,6 +1,6 @@
 .PHONY: clean all
 
-FLAGS = --number-sections --top-level-division=chapter -H inheader.tex 
+FLAGS = --number-sections --top-level-division=chapter -H inheader.tex --filter pandoc-citeproc
 COMPONENTFILES = metadata.yaml macros.md acks.md \
 		intro.md rq.md background2.md dataset.md model.md formal_rq.md \
 		mst-alg.md results.md discussion.md conclusion.md 

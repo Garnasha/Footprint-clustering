@@ -17,4 +17,29 @@ classoption: fleqn
 
 
 # Bibliography
+link-citations: true
+references:
+  - id: tarjan1983
+    type: book
+    DOI: 10.1137/1.9781611970265
+    ISBN: 0-89871-187-8
+    author:
+      - family: Tarjan
+        given: Robert E.
+    title: 'Data Structurs and Network Algorithms'
+    issued: 
+      - year: 1983
+    publisher: Society for Industrial and Applied Mathematics
+    language: en-US
+  - id: iupacodes
+    title: IUPAC Codes
+    type: webpage
+    author: 
+      - family: bioinformatics.org/sms/iupac
+    URL: https://www.bioinformatics.org/sms/iupac.html
+    accessed: 
+      date-parts:
+        - - 2017
+          - 04
+          - 18
 ---

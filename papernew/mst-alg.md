@@ -79,23 +79,31 @@ particular sequence occurs (for cutoff criteria, or metric tweaking).
 Therefore, count occurences and discard locations, yielding a new
 $\text{dataset} \subset \Sequences \times \mathbb{N}$
 
+###Noise Reduction: Minimum Occurrence Count
+Since we expect noise to not produce the same sequence over and over,
+but do expect legitimate footprints to do so, we apply a filter at this
+point: Any sequence which does not occur at least $N$ times is
+discarded, producing a high-pass filter of sorts. Since we have no
+algorithm to determine a good value for $N$ from the dataset, we ask for
+a value for $N$ at run-time, and let the user determine a good value by
+trial and error.
+
 ###Minimal Spanning Tree Construction
-The construction of a Minimal Spanning Tree is done by Prim's Algorithm,
-as described in [@tarjan1983 p. 76], a standard memoized greedy
+The construction of a Minimal Spanning Tree is done by Prim's Algorithm
+[as described in @tarjan1983 p. 76], a standard memoized greedy
 algorithm which takes a set of vertices $V$ and a weight function $w: V
-\times V \rightarrow W \subset \mathbb{R}$ on these vertices. Note that
-we will not be using the heap-based optimization for sparse graphs
-described in [@tarjan p. 77] . 
+\times V \rightarrow W \subset \mathbb{R}$ on these vertices.
 
 By setting
-
 $$V \subset \Sequences \times \mathbb{N}$$
 $$w = d\text{ for some metric }d : V \times V \rightarrow ℝ$$
+we can use Prim for clustering in a metric space. Since this gives us
+a complete graph, we will not be using the heap-based optimization for
+sparse graphs [described in @tarjan1983 p. 77].
 
-we can use Prim for clustering in a metric space. NB: while metrization
-is possible, V, not being a ring, does not have any obvious concept of
-averages. It can, however, be embedded in a join-semilattice, which we
-will use later.
+NB: while metrization is possible, V, not being a ring, does not have
+any obvious concept of averages. It can, however, be embedded in a
+join-semilattice, which we will use later.
 
 The idea behind Prim's algorithm is to expand the tree iteratively,
 calculating at each step which node not in the tree is closest to the
@@ -138,21 +146,22 @@ Prim (V, w, r ∈ V):
     Now T[n-1] = V, and (V,E[n-1]) forms a Minimal Spanning Tree
 ```
 
-Running `Prim(dataset,d,v ∈ dataset)` yields `MST = (V,E)`.
+Given this algorithm, we run `Prim(dataset,d,v ∈ dataset)` and obtain an MST.
 
 ####A note on complexity and choice of algorithms
-An alternative approach to constructing the MST would be to use
+An alternative approach for constructing the MST would be to use
 Kruskal's algorithm, which does not expand a single tree but simply
 keeps adding the shortest edges overall without forming cycles, forming
 a forest which eventually merges into one tree.
 
 However, this performs slightly worse than linear in the number of
 edges, while Prim's algorithm can be made quadratic in the number of
-vertices. Since we're effectively operating on a complete graph, the
-number of edges is the square of the number of vertices, making Prim's
-algorithm strictly linear in the number of edges.
+vertices [see @tarjan1983 pp. 74-76]. Since we're effectively
+operating on a complete graph, the number of edges is the square of the
+number of vertices, making Prim's algorithm strictly linear in the
+number of edges, and therefore optimal.
 
-Several other algorithms exist, but we aren't aware of any that do
+Several other algorithms exist, but we aren't aware of any that perform
 better than linear in the number of edges.
 
 ###Choosing the distance metric
@@ -163,43 +172,48 @@ metrics have been tried, although the code does support using custom
 metrics if any are available.
 
 ###Culling the MST
-The hypothesis now is that vertices which should be clustered will be
+The hypothesis now is that vertices that should be clustered will be
 close in the MST, and so cutting longest edges will not split any true
-clusters. Therefore, decide on some number N of edges to cut and remove
-the N longest edges from E to yield E′, resulting in a forest of N+1
-components.
+clusters. Therefore, decide on some number $N$ of edges to cut and
+remove the $N$ longest edges from $E$ to yield $E′$, resulting in a
+forest of $N+1$ components.
 
-###Selecting the amount of edges to cut
-*FIXME:* Currently, this is a constant, based on a reasonable guess at
-the amount of clusters in the data.
+###Cutting criterion
+After some trial-and-error, we have concluded that cutting all edges
+longer than 1 is the best cutting policy when using Hamming distances.
+Metrics offering a better resolution should be combined with a more
+sophisticated cutting criterion. 
 
 ###Collecting the MST
-Now determine the connected components
-$\{V[n] = \{v ∈ V \mid ∃ \text{path from } v[n] \text{ to } v\}\}$ with $∀n ¬∃m<n, v[n] ∈ V[m]$
+Now determine the connected components by iterating over all vertices,
+doing a simple (depth-first) tree traversal to discover all vertices
+reachable from the current vertex, marking all vertices so found,
+recording them as one cluster, and skipping marked vertices in future
+iterations to avoid duplication.
 
 ####Taking the join of a connected component.
 At this point, we want to produce a list of motifs to answer the
 biological question. To do this, we embed the sequence space Sequence
 (from chapter [Model]) into the wildcard space
-$\Wildcard:=({0,1}⁴)^*$ by embedding $i: \nA ↦ (1,0,0,0), \nC
-↦ (0,1,0,0), \nT ↦ (0,0,1,0), \nG ↦ (0,0,0,1)$. Now we
+$\Wildcard:=(\{0,1\}^4)^*$ by embedding $i: \nA \mapsto (1,0,0,0), \nC
+\mapsto (0,1,0,0), \nT \mapsto (0,0,1,0), \nG \mapsto (0,0,0,1)$. Now we
 define a join-semilattice on $\Wildcard$, by defining the join of two
-motifs of the same length to be their pointwise coordinatewise
-disjunction:
+motifs of the same length to be their pointwise coordinatewise join:
 
 \begin{flalign*}
-\join : & \{0,1\}⁴ \times \{0,1\}⁴ → \{0,1\}⁴ \\
-        & ((x₁,x₂,x₃,x₄),(y₁,y₂,y₃,y₄)) ↦ (x₁ ∨ y₁,x₂ ∨ y₂,x₃ ∨ y₃,x₄ ∨ y₄) \\
-\join : & \left(\{0,1\}⁴\right)^* × \left(\{0,1\}⁴\right)^* → \left(\{0,1\}⁴\right)^* \\
-        & (l, r) ↦ \begin{cases}
+\join : & \{0,1\}^4 \times \{0,1\}^4 \rightarrow \{0,1\}^4 \\
+        & ((x_1,x_2,x_3,x_4),(y_1,y_2,y_3,y_4)) \mapsto 
+        (x_1 \vee y_1,x_2 \vee y_2,x_3 \vee y_3,x_4 \vee y_4) \\
+\join : & \left(\{0,1\}^4\right)^* \times \left(\{0,1\}^4\right)^* 
+        \rightarrow \left(\{0,1\}^4\right)^* \\
+        & (l, r) \mapsto \begin{cases}
             () &\mbox{if } (l, r) = ((),()) \\
-            \join(b, c) ⋅ \join(v, w) &\mbox{if } (l, r) = (bv, cw) \\
-            ↑ &\mbox{otherwise}
+            \join(b, c) \cdot \join(v, w) &\mbox{if } (l, r) = (bv, cw) \\
+            \uparrow &\mbox{otherwise}
         \end{cases}
 \end{flalign*}
-
 Having defined this semilattice, we can take the join of each cluster,
-translate the resulting may/may not appear-codes back into standard
+translate the resulting may appear/may not appear-codes back into standard
 IUPAC DNA ambiguity codes, and deliver these to biologists as our best
 guess.
 

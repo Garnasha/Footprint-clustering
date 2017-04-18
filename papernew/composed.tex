@@ -496,21 +496,36 @@ particular sequence occurs (for cutoff criteria, or metric tweaking).
 Therefore, count occurences and discard locations, yielding a new
 \(\text{dataset} \subset \Sequences \times \mathbb{N}\)
 
+\subsection{Noise Reduction: Minimum Occurrence
+Count}\label{noise-reduction-minimum-occurrence-count}
+
+Since we expect noise to not produce the same sequence over and over,
+but do expect legitimate footprints to do so, we apply a filter at this
+point: Any sequence which does not occur at least \(N\) times is
+discarded, producing a high-pass filter of sorts. Since we have no
+algorithm to determine a good value for \(N\) from the dataset, we ask
+for a value for \(N\) at run-time, and let the user determine a good
+value by trial and error.
+
 \subsection{Minimal Spanning Tree
 Construction}\label{minimal-spanning-tree-construction}
 
-The construction of a Minimal Spanning Tree is done by Prim's Algorithm,
-a standard memoized greedy algorithm which takes a set of vertices \(V\)
+The construction of a Minimal Spanning Tree is done by Prim's Algorithm
+(as described in Tarjan \protect\hyperlink{ref-tarjan1983}{1983}, 76), a
+standard memoized greedy algorithm which takes a set of vertices \(V\)
 and a weight function \(w: V \times V \rightarrow W \subset \mathbb{R}\)
-on these vertices. By setting
+on these vertices.
 
-\[V \subset \Sequences \times \mathbb{N}\]
-\[w = d\text{ for some metric }d : V \times V \rightarrow ℝ\]
+By setting \[V \subset \Sequences \times \mathbb{N}\]
+\[w = d\text{ for some metric }d : V \times V \rightarrow ℝ\] we can use
+Prim for clustering in a metric space. Since this gives us a complete
+graph, we will not be using the heap-based optimization for sparse
+graphs (described in Tarjan \protect\hyperlink{ref-tarjan1983}{1983},
+77).
 
-we can use Prim for clustering in a metric space. NB: while metrization
-is possible, V, not being a ring, does not have any obvious concept of
-averages. It can, however, be embedded in a join-semilattice, which we
-will use later.
+NB: while metrization is possible, V, not being a ring, does not have
+any obvious concept of averages. It can, however, be embedded in a
+join-semilattice, which we will use later.
 
 The idea behind Prim's algorithm is to expand the tree iteratively,
 calculating at each step which node not in the tree is closest to the
@@ -554,24 +569,25 @@ Prim (V, w, r ∈ V):
     Now T[n-1] = V, and (V,E[n-1]) forms a Minimal Spanning Tree
 \end{verbatim}
 
-Running \texttt{Prim(dataset,d,v\ ∈\ dataset)} yields
-\texttt{MST\ =\ (V,E)}.
+Given this algorithm, we run \texttt{Prim(dataset,d,v\ ∈\ dataset)} and
+obtain an MST.
 
 \subsubsection{A note on complexity and choice of
 algorithms}\label{a-note-on-complexity-and-choice-of-algorithms}
 
-An alternative approach to constructing the MST would be to use
+An alternative approach for constructing the MST would be to use
 Kruskal's algorithm, which does not expand a single tree but simply
 keeps adding the shortest edges overall without forming cycles, forming
 a forest which eventually merges into one tree.
 
 However, this performs slightly worse than linear in the number of
 edges, while Prim's algorithm can be made quadratic in the number of
-vertices. Since we're effectively operating on a complete graph, the
-number of edges is the square of the number of vertices, making Prim's
-algorithm strictly linear in the number of edges.
+vertices (see Tarjan \protect\hyperlink{ref-tarjan1983}{1983}, 74--76).
+Since we're effectively operating on a complete graph, the number of
+edges is the square of the number of vertices, making Prim's algorithm
+strictly linear in the number of edges, and therefore optimal.
 
-Several other algorithms exist, but we aren't aware of any that do
+Several other algorithms exist, but we aren't aware of any that perform
 better than linear in the number of edges.
 
 \subsection{Choosing the distance
@@ -585,23 +601,26 @@ using custom metrics if any are available.
 
 \subsection{Culling the MST}\label{culling-the-mst}
 
-The hypothesis now is that vertices which should be clustered will be
+The hypothesis now is that vertices that should be clustered will be
 close in the MST, and so cutting longest edges will not split any true
-clusters. Therefore, decide on some number N of edges to cut and remove
-the N longest edges from E to yield E′, resulting in a forest of N+1
-components.
+clusters. Therefore, decide on some number \(N\) of edges to cut and
+remove the \(N\) longest edges from \(E\) to yield \(E′\), resulting in
+a forest of \(N+1\) components.
 
-\subsection{Selecting the amount of edges to
-cut}\label{selecting-the-amount-of-edges-to-cut}
+\subsection{Cutting criterion}\label{cutting-criterion}
 
-\emph{FIXME:} Currently, this is a constant, based on a reasonable guess
-at the amount of clusters in the data.
+After some trial-and-error, we have concluded that cutting all edges
+longer than 1 is the best cutting policy when using Hamming distances.
+Metrics offering a better resolution should be combined with a more
+sophisticated cutting criterion.
 
 \subsection{Collecting the MST}\label{collecting-the-mst}
 
-Now determine the connected components
-\(\{V[n] = \{v ∈ V \mid ∃ \text{path from } v[n] \text{ to } v\}\}\)
-with \(∀n ¬∃m<n, v[n] ∈ V[m]\)
+Now determine the connected components by iterating over all vertices,
+doing a simple (depth-first) tree traversal to discover all vertices
+reachable from the current vertex, marking all vertices so found,
+recording them as one cluster, and skipping marked vertices in future
+iterations to avoid duplication.
 
 \subsubsection{Taking the join of a connected
 component.}\label{taking-the-join-of-a-connected-component.}
@@ -609,65 +628,29 @@ component.}\label{taking-the-join-of-a-connected-component.}
 At this point, we want to produce a list of motifs to answer the
 biological question. To do this, we embed the sequence space Sequence
 (from chapter \protect\hyperlink{model}{Model}) into the wildcard space
-\(\Wildcard:=({0,1}⁴)^*\) by embedding
-\(i: \nA ↦ (1,0,0,0), \nC ↦ (0,1,0,0), \nT ↦ (0,0,1,0), \nG ↦ (0,0,0,1)\).
+\(\Wildcard:=(\{0,1\}^4)^*\) by embedding
+\(i: \nA \mapsto (1,0,0,0), \nC \mapsto (0,1,0,0), \nT \mapsto (0,0,1,0), \nG \mapsto (0,0,0,1)\).
 Now we define a join-semilattice on \(\Wildcard\), by defining the join
 of two motifs of the same length to be their pointwise coordinatewise
-disjunction:
+join:
 
 \begin{flalign*}
-\join : & \{0,1\}⁴ \times \{0,1\}⁴ → \{0,1\}⁴ \\
-        & ((x₁,x₂,x₃,x₄),(y₁,y₂,y₃,y₄)) ↦ (x₁ ∨ y₁,x₂ ∨ y₂,x₃ ∨ y₃,x₄ ∨ y₄) \\
-\join : & \left(\{0,1\}⁴\right)^* × \left(\{0,1\}⁴\right)^* → \left(\{0,1\}⁴\right)^* \\
-        & (l, r) ↦ \begin{cases}
+\join : & \{0,1\}^4 \times \{0,1\}^4 \rightarrow \{0,1\}^4 \\
+        & ((x_1,x_2,x_3,x_4),(y_1,y_2,y_3,y_4)) \mapsto 
+        (x_1 \vee y_1,x_2 \vee y_2,x_3 \vee y_3,x_4 \vee y_4) \\
+\join : & \left(\{0,1\}^4\right)^* \times \left(\{0,1\}^4\right)^* 
+        \rightarrow \left(\{0,1\}^4\right)^* \\
+        & (l, r) \mapsto \begin{cases}
             () &\mbox{if } (l, r) = ((),()) \\
-            \join(b, c) ⋅ \join(v, w) &\mbox{if } (l, r) = (bv, cw) \\
-            ↑ &\mbox{otherwise}
+            \join(b, c) \cdot \join(v, w) &\mbox{if } (l, r) = (bv, cw) \\
+            \uparrow &\mbox{otherwise}
         \end{cases}
 \end{flalign*}
 
 Having defined this semilattice, we can take the join of each cluster,
-translate the resulting may/may not appear-codes back into standard
-IUPAC DNA ambiguity codes, and deliver these to biologists as our best
-guess.
-
-\subsection{Formalism and types (WIP)}\label{formalism-and-types-wip}
-
-We'll first note some type definitions, then note the steps taken in
-pseudocode. Lines starting with \texttt{Let} introduce some concept not
-easily or concisely expressible in pseudocode, and follow mathematical
-conventions instead. Comments will be proceded by ``Note:''
-
-NB: We will ignore most details of the interpretation of this formalism.
-While systems for rigorous typing of IO actions do exist (IO monad,
-uniqueness typing), this is not the subject of this thesis. Instead,
-we'll leave this to the actual implementation, and introduce some dummy
-functions to mark where files are opened and closed.
-
-\begin{verbatim}
-Let Numeric, AlphaNumeric, * (Kleene Star), N have their usual meanings.
-
-toNat : Numeric* → N,
-    base 10 notation of n |→ n
-
-Strings := AlphaNumeric*
-
-Let Files be the set of files.
-
-open : Strings → Files ,
-       path |→ file in the location described by path
-
-close : Files → {1}
-     , file |→ 1
-Note: This is a placeholder to denote the closing of a function.
-
-Let Nucleotides be the set of nucleotides, representable by
-{'a','c','t','g'}.
-
-Sequences := (Nucleotides U {'N'})*
-
-readFasta : Files → Sequences
-\end{verbatim}
+translate the resulting may appear/may not appear-codes back into
+standard IUPAC DNA ambiguity codes, and deliver these to biologists as
+our best guess.
 
 \chapter{Results}\label{results}
 
@@ -676,10 +659,12 @@ program compiled from the current version of the source.
 
 \section{Reading the raw results}\label{reading-the-raw-results}
 
-The first part of each run of output is diagnostic information. This has
-been introduced in the debugging phase, and gives some insight into the
-state of the program during execution, facilitating potential further
-development. Outside of development, it should be ignored.
+Except for the dialogue setting the minimum occurence count (``cutoff'')
+on lines 3 and 4, the first part of each run of output is diagnostic
+information. This has been introduced in the debugging phase, and gives
+some insight into the state of the program during execution,
+facilitating potential further development. Outside of development, it
+should be ignored.
 
 Actual output starts, in each run, below the line ``Press any key to
 continue.'' After this, every line contains one motif, formatted as
@@ -688,19 +673,20 @@ continue.'' After this, every line contains one motif, formatted as
 <sequence> <#(data points in cluster)> <#(unique original sequences in cluster)>
 \end{verbatim}
 
-With sequences written using IUPAC ambiguity codes. The lists are sorted
-by the second column, with shorter sequences coming first in case of a
-tie.
+With sequences written using standard IUPAC ambiguity codes (see
+bioinformatics.org/sms/iupac \protect\hyperlink{ref-iupacodes}{2017}).
+The lists are sorted by the second column, with shorter sequences coming
+first in case of a tie.
 
 All runs are performed with the same settings, except for the lower
 limit on the amount of identical sequence occurences in the input
 dataset required before a sequence gets included as a data point for the
 MST algorithm.
 
-Runs are presented in nor particular order. Runs with lower limits below
+Runs are presented in no particular order. Runs with lower limits below
 5 are excluded from the print version, due to such settings creating
 excessive amounts of output. Digital plain text files for runs with
-lower limits 3 and 1 are available.
+lower limits 3 and 1 (no filter) are available.
 
 \section{Summary}\label{summary}
 
@@ -713,8 +699,8 @@ here, a summary is possible:
   The vast majority of the data is absorbed by \(N^*\) sequences of
   various lengths, which accept everything.
 \item
-  For every lower bound, the data has a tail of sequences based on a
-  single identical sequence.
+  For every lower bound, the data has a tail of sequences, each output
+  sequence based on a single input sequence (degenerate clusters).
 \item
   There are several examples of sequences which look very similar, but
   are of different length.
@@ -726,18 +712,24 @@ here, a summary is possible:
 
 Based on the summary given above, the main result is negative: No useful
 clusters can be found in the majority of the dataset by this algorithm.
-From this, we can conclude that a simple hamming metric is probably too
+From this, we can conclude that a simple Hamming metric is probably too
 coarse. The lowest non-zero distance it can create is 1, and this has
 been taken as the maximum distance to relate two otherwise unrelated
-sequences. No stricter criterium is possible, yet it is not strict
+sequences. No stricter criterion is possible, yet it is not strict
 enough to not absorb the vast majority of the data into a single cluster
 per sequence length.
 
 What this says about the dataset is that, using this metric, we can walk
 within sequences in the dataset from almost any point to almost any
-other point without ever taking steps longer than 1. Intuitively, this
-seems to indicate that if any real clusters exist, those clusters all
-touch, which gives a rather ``fuzzy'' view.
+other point without ever having a step distance greater than 1.
+Intuitively, this seems to indicate that if any real clusters exist,
+those clusters all touch, which gives a rather ``fuzzy'' view.
+
+Alternatively, the dataset might just be too noisy. However, if this is
+the case, the majority of the dataset is under the noise floor, based on
+trial and error with the minimum occurence count setting: any setting
+which eliminates the ``all'' cluster leaves only a few scattered peaks,
+with no or nearly no actual clustering occurring.
 
 Note that this is a property of the dataset equipped with this metric:
 Other metrics might produce a clearer view, and indeed this is likely if
@@ -756,32 +748,33 @@ generic of clustering algorithms.
 
 The tails of singletons noted in the summary are very unlikely to
 actually exist as proper motifs belonging to transcription factors,
-especially considering their low occurences. They are almost certainly
-noise, and should be ignored.
+especially considering their low occurence numbers. They are almost
+certainly noise, and should be ignored.
 
 However, their existence also indicates the amount of noise in the
 entire dataset, including where it might interfere with clustering
 algorithms. Any succesful clustering algorithm will have to handle such
-noise correctly. A filter which can remove such noise before clustering
-might work, but ideally, clustering algorithms should be made robust
-against this type of noise.
+noise correctly. A filter capable of removing such noise before
+clustering might work, but ideally, clustering algorithms should be made
+inherently robust against this type of noise.
 
 \subsection{Similarity across lengths}\label{similarity-across-lengths}
 
 In designing both the distance function and the join function, it had
 been assumed that all sequences within a motif should be of the same
-length. Several sequences in the result contradict this assumption,
-including some non-trivial pairs with a length difference of 1.
+length. Several sequences in the result seem to contradict this
+assumption, including some non-trivial pairs with a length difference of
+1.\\
 Therefore, future algorithms should \emph{not} make this assumption, and
 instead find some way to interpret and represent similarity between
-sequences of different length.
+sequences of different lengths.
 
 \section{Potential improvements}\label{potential-improvements}
 
 \subsection{Distance functions}\label{distance-functions}
 
 The distance function used was a simple Hamming metric, which is
-relatively course. Several refinements are thinkable:
+relatively coarse. Several refinements are imaginable:
 
 \subsubsection{Sequence-based
 refinement}\label{sequence-based-refinement}
@@ -817,15 +810,16 @@ Constructing an MST doesn't really leave any choices or tuning
 variables, so it is hard to improve it except by choosing a better
 distance function. Alternative algorithms are thinkable however, so long
 as one keeps in mind that the sequence space does not have meaningful
-averages, and so can't use averaging-based clustering algorithms.
+averages, and so it's not possible to use averaging-based clustering
+algorithms.
 
 \subsubsection{Convexity-based}\label{convexity-based}
 
-One very plausible theory is that true clusters are (mostly) convex.
+One very plausible hypothesis is that true clusters are (mostly) convex.
 This requires a generalisation of the concept of convexity:
 
-A subset \(A\) of a metric space \(X\) is considered convex iff,
-\(∀ x, y ∈ A \, ∀ z ∈ X \, d(x,z) + d(z,y) = d(x,y) ⇒ z ∈ A\).
+A subset \(A\) of a metric space \(X\) is considered convex iff
+\(\forall x, y \in A \, \forall z \in X \, d(x,z) + d(z,y) = d(x,y) \Rightarrow z \in A\).
 
 In other words, if two points are in a convex set, that set must also
 include all points ``between'' them for which the triangle inequality is
@@ -834,9 +828,9 @@ with weighted averages such as real and complex numbers and vector
 spaces.
 
 Given such a notion of convexity, it might be possible and useful to
-define an algorithm which tries to split non-convex clusters, ideally
-such that as many points in the cluster but not in the dataset are
-excluded from the union of the two new clusters (intuitively, split
+define an algorithm based on trying to split non-convex clusters,
+ideally such that as many points in the cluster but not in the dataset
+are excluded from the union of the two new clusters (intuitively, split
 along the plane of maximum missing datapoints in the cluster). Given an
 algorithm to perform such a step, apply this iteratively to the most
 non-convex cluster after each step, starting with a universal cluster.
@@ -845,7 +839,7 @@ No attempt has been made here to write such an algorithm beyond
 formulating the concept, but further work could include making such an
 attempt.
 
-\subsubsection{Co-occurence based}\label{co-occurence-based}
+\subsubsection{Co-occurrence based}\label{co-occurrence-based}
 
 Another possibility is to look not only at what sequences are found, but
 also where they are found. Transcription factors form complexes, so
@@ -871,5 +865,15 @@ using a Hamming metric. Several improvements are thinkable, some of
 which are based on the little information which the approach used here
 revealed. However, implementing such improvements is beyond the scope of
 this thesis.
+
+\hypertarget{refs}{}
+\hypertarget{ref-iupacodes}{}
+bioinformatics.org/sms/iupac. 2017. ``IUPAC Codes.'' Accessed April 18.
+\url{https://www.bioinformatics.org/sms/iupac.html}.
+
+\hypertarget{ref-tarjan1983}{}
+Tarjan, Robert E. 1983. \emph{Data Structurs and Network Algorithms}.
+Society for Industrial and Applied Mathematics.
+doi:\href{https://doi.org/10.1137/1.9781611970265}{10.1137/1.9781611970265}.
 
 \end{document}

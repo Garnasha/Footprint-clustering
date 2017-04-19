@@ -217,4 +217,7 @@ translate the resulting may appear/may not appear-codes back into standard
 IUPAC DNA ambiguity codes, and deliver these to biologists as our best
 guess.
 
+##Code
+The code for the algorithm described above is included in Appendix Code, 
+as well as digitally at [www.math.ru.nl/~bosma/Students?/????] . 
 

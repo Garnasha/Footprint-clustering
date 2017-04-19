@@ -1,6 +1,6 @@
 #Results
-[Appendix: Results] contains raw output of various runs of the
-program compiled from the current version of the source.
+Raw output of various runs of the program are included in Appendix Data.
+More can be found on [www.math.ru.nl/~bosma/Students?/????] . 
 
 ##Reading the raw results
 Except for the dialogue setting the minimum occurence count ("cutoff")

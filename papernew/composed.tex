@@ -652,10 +652,17 @@ translate the resulting may appear/may not appear-codes back into
 standard IUPAC DNA ambiguity codes, and deliver these to biologists as
 our best guess.
 
+\section{Code}\label{code}
+
+The code for the algorithm described above is included in Appendix Code,
+as well as digitally at
+{[}www.math.ru.nl/\textasciitilde{}bosma/Students?/????{]} .
+
 \chapter{Results}\label{results}
 
-{[}Appendix: Results{]} contains raw output of various runs of the
-program compiled from the current version of the source.
+Raw output of various runs of the program are included in Appendix Data.
+More can be found on
+{[}www.math.ru.nl/\textasciitilde{}bosma/Students?/????{]} .
 
 \section{Reading the raw results}\label{reading-the-raw-results}
 
@@ -741,6 +748,34 @@ impossible or even unlikely given the subject matter. If clusters
 overlap, a more sophisticated algorithm will be required, likely
 designed specifically with this problem in mind, rather than this most
 generic of clustering algorithms.
+
+\section{Conclusion for Biologists}\label{conclusion-for-biologists}
+
+The approach used in this thesis did not yield any directly useful
+results, beyond the suspicion that motifs should not be assumed to only
+cover sequences of a single size.
+
+However, the manner in which it failed does provide some insight into
+the shape of the dataset, the shape of the noise, and the amount of
+noise. This should prove useful in formulating any alternative
+approaches.
+
+Additionally, while our primitive clustering algorithm turned out to be
+mostly useless, the underlying model is likely fine, and can be used for
+other algorithms without substantial biological knowledge, said
+knowledge being contained in the model.
+
+An exception is the process of taking the ``join'' of a cluster to
+extract a motif, if the cluster contains sequences of differing lengths.
+The model does not define any way to do so, and it is not easily defined
+without some biological knowledge. In this case, a biologist would need
+to be available to answer questions, and provide some examples of the
+``right'' motifs for some clusters with varying sequence lengths.
+
+In summary, while providing no direct results, this thesis can hopefully
+allow data scientists without much biological background to develop more
+sophisticated algorithms, using only this thesis for background
+knowledge.
 
 \section{Other considerations}\label{other-considerations}
 
@@ -867,9 +902,21 @@ revealed. However, implementing such improvements is beyond the scope of
 this thesis.
 
 \hypertarget{refs}{}
+\hypertarget{ref-kees}{}
+Albers, Kees. Letter. n.d.
+
 \hypertarget{ref-iupacodes}{}
 bioinformatics.org/sms/iupac. 2017. ``IUPAC Codes.'' Accessed April 18.
 \url{https://www.bioinformatics.org/sms/iupac.html}.
+
+\hypertarget{ref-colin}{}
+Logie, Colin. Letter. n.d.
+
+\hypertarget{ref-wout}{}
+Megchelenbrink, Wout. Letter. n.d.
+
+\hypertarget{ref-sadia}{}
+Saeed, Sadia. Letter. n.d.
 
 \hypertarget{ref-tarjan1983}{}
 Tarjan, Robert E. 1983. \emph{Data Structurs and Network Algorithms}.

@@ -42,4 +42,27 @@ references:
         - - 2017
           - 04
           - 18
+  - id: colin
+    type: personal-communication
+    author:
+      - given: Colin
+        family: Logie
+  - id: kees
+    type: personal-communication
+    author:
+      - given: Kees
+        family: Albers
+  - id: wout
+    type: personal-communication
+    author:
+      - given: Wout
+        family: Megchelenbrink
+  - id: sadia
+    type: personal-communication
+    author:
+      - given: Sadia
+        family: Saeed
+
+nocite: | 
+    @colin, @kees, @wout, @sadia
 ---

@@ -32,6 +32,33 @@ overlap, a more sophisticated algorithm will be required, likely
 designed specifically with this problem in mind, rather than this most
 generic of clustering algorithms.
 
+##Conclusion for Biologists
+The approach used in this thesis did not yield any directly useful
+results, beyond the suspicion that motifs should not be assumed to only
+cover sequences of a single size. 
+
+However, the manner in which it failed does provide some insight into
+the shape of the dataset, the shape of the noise, and the amount of
+noise. This should prove useful in formulating any alternative
+approaches. 
+
+Additionally, while our primitive clustering algorithm turned out to be
+mostly useless, the underlying model is likely fine, and can be used for
+other algorithms without substantial biological knowledge, said
+knowledge being contained in the model. 
+
+An exception is the process of taking the "join" of a cluster to extract
+a motif, if the cluster contains sequences of differing lengths. The
+model does not define any way to do so, and it is not easily defined
+without some biological knowledge. In this case, a biologist would need
+to be available to answer questions, and provide some examples of the
+"right" motifs for some clusters with varying sequence lengths.
+
+In summary, while providing no direct results, this thesis can hopefully
+allow data scientists without much biological background to develop more
+sophisticated algorithms, using only this thesis for background
+knowledge.
+
 ##Other considerations
 ###Singleton clusters
 The tails of singletons noted in the summary are very unlikely to
